@@ -17,6 +17,9 @@ data = {
             "styles": {
                 0: {
                     "color": "white"
+                },
+                1:{
+                    "left": "0"
                 }
             },
         },
@@ -29,7 +32,7 @@ data = {
                     "color": "black"
                 },
                 1: {
-                    "position": "auto, auto, 0, 0"
+                    "right": "100"
                 }
             },
         }
@@ -112,7 +115,7 @@ function make_full_css(data) {
     console.log(stylesheet);
 }
 
-make_css(data)
+make_full_css(data)
 
 var slideshow = document.getElementById("slideshow");
 slideId = 0
@@ -132,6 +135,7 @@ function addObject(data){
             object.src = data.objects[item].src
         }
         object.id = "object-"+item;
+        object.classList.add("object")
         slideshow.appendChild(object);
     }
 }
@@ -159,5 +163,6 @@ document.onkeydown = function() {
         }
     }
     console.log(slideId)
+    document.querySelector(".slideshow").id = "slide-"+slideId
 };
 addObject(data)
