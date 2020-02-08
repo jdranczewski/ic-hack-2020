@@ -164,6 +164,14 @@ document.onkeydown = function() {
             slideId=(slideId-1);
         }
     }
+    else if (charCode == 70){
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            document.documentElement.requestFullscreen();
+        }
+        
+    }
     console.log(slideId)
     document.querySelector(".slideshow").id = "slide-"+slideId
 };
