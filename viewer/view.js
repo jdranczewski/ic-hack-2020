@@ -32,18 +32,15 @@ data = {
                     "color": "black"
                 },
                 1: {
-                    "right": "100"
+                    "left": "100px"
                 }
             },
         }
     }
 }
 
-function generate_css(slide_id, object_id, styles, show) {
+function generate_css(slide_id, object_id, styles) {
     current_style = "";
-    if (show) {
-        current_style += "opacity: 1;"
-    }
     for (key in styles) {
         current_style += `${key}: ${styles[key]};`
     }
@@ -77,8 +74,8 @@ function make_full_css(data) {
             console.log("there exists a next slide")
             for (object_id in data["slides"][next]["visible"]) {
                 object_id = parseInt(object_id)
-                if (slide["visible"].indexOf(object_id) == -1){
-                    stylesheet += generate_css(slide_id, object_id, data["slides"][next]["styles"][object_id], false);
+                if (slide["styles"][object_id] == undefined){
+                    stylesheet += generate_css(slide_id, object_id, data["slides"][next]["styles"][object_id]);
                 }
             }
         }
@@ -91,19 +88,24 @@ function make_full_css(data) {
             console.log("there exists a prev slide")
             for (object_id in data["slides"][prev]["visible"]) {
                 object_id = parseInt(object_id)
-                if (slide["visible"].indexOf(object_id) == -1){
-                    stylesheet += generate_css(slide_id, object_id, data["slides"][prev]["styles"][object_id], false);
+                if (slide["styles"][object_id] == undefined){
+                    stylesheet += generate_css(slide_id, object_id, data["slides"][prev]["styles"][object_id]);
                 }
             }
         }
 
-
         // Generate styles for this slide
         stylesheet += "\n/*This slide*/\n"
-        for (object_id in slide["visible"]) {
+        for (object_id in slide["styles"]) {
             console.log("F")
             console.log(object_id)
-            stylesheet += generate_css(slide_id, object_id, slide["styles"][object_id], true);
+            stylesheet += generate_css(slide_id, object_id, slide["styles"][object_id]);
+        }
+
+        // Make visible things visible
+        stylesheet += "\n/*Visibility*/\n"
+        for (object_id in slide["visible"]) {
+            stylesheet += `#slide-${slide_id} #object-${object_id} {opacity: 1}\n`
         }
 
     }
@@ -117,7 +119,7 @@ function make_full_css(data) {
 
 make_full_css(data)
 
-var slideshow = document.getElementById("slideshow");
+var slideshow = document.querySelector(".slideshow");
 slideId = 0
 
 //==============ADD OBJECTS=============================
