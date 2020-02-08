@@ -112,7 +112,7 @@ function make_full_css(data) {
     console.log(stylesheet);
 }
 
-make_css(data)
+make_full_css(data)
 
 var slideshow = document.getElementById("slideshow");
 slideId = 0
