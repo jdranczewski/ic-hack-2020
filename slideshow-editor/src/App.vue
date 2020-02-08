@@ -48,6 +48,11 @@
       <v-btn icon @click="addDiv(currentSlide)">
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
+      <v-spacer></v-spacer>
+      <v-btn @click="present" light right>
+        <v-icon left>mdi-presentation-play</v-icon>
+        Present
+      </v-btn>
     </v-app-bar>
 
     <v-content>
@@ -74,9 +79,6 @@
           </div>
         </v-card>
       </v-container>
-      <!-- <v-btn bottom color="pink" dark fab fixed right @click="addSlide()">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>-->
     </v-content>
   </v-app>
 </template>
@@ -166,6 +168,16 @@ export default {
 
     getCardStyle(s) {
       return { "background-color": s.background_colour };
+    },
+
+    present() {
+        console.log(this);
+        var transfer = {
+            "slides": this.slides,
+            "objects": this.objects
+        }
+        localStorage.setItem("data", JSON.stringify(transfer));
+        window.open("/viewer.html", "Slideshow", "width=auto, height=auto");
     }
   }
 };
