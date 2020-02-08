@@ -52,12 +52,8 @@
               :hasActiveContent="true"
               v-on="{change: itemChange(i)}"
             >
-              <img
-                v-if="objects[i].type == 'img'"
-                :src="objects[i].src"
-                style="width: 100%; height: 100%"
-              />
-              <text-box v-if="objects[i].type == 'div'"></text-box>
+              <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" />
+              <text-box2 v-if="objects[i].type == 'div'"></text-box2>
               <!-- <div
                 v-if="objects[i].type == 'div'"
                 style="width: 100%; height: 100%"
@@ -74,10 +70,10 @@
 </template>
 
 <script>
-import TextBox from "./components/TextBox.vue";
+import TextBox2 from "./components/TextBox2.vue";
 
 export default {
-  components: { TextBox },
+  components: { TextBox2 },
   data: () => ({
     dialog: false,
     drawer: null,
@@ -102,7 +98,8 @@ export default {
         styles: []
       };
 
-      this.slides.push(slide);
+      // this.slides.push(slide);
+      this.slides.splice(this.currentSlide + 1, 0, slide);
     },
 
     addImage(slide_index) {
@@ -146,7 +143,7 @@ export default {
 </script>
 
 <style scoped>
-.slideobject {
+.slideObject {
   width: 100%;
   height: 100%;
 }
