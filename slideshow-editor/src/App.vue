@@ -33,6 +33,7 @@
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
     </v-app-bar>
+
     <v-content>
       <v-container class="fill-height" fluid>
         <v-card
@@ -47,7 +48,8 @@
               :y="slides[currentSlide].styles[i].y"
               :w="slides[currentSlide].styles[i].width"
               :h="slides[currentSlide].styles[i].height"
-              :angle="0"
+              :angle="slides[currentSlide].styles[i].angle"
+              :hasActiveContent="true"
               v-on="{change: itemChange(i)}"
             >
               <img
@@ -55,10 +57,11 @@
                 :src="objects[i].src"
                 style="width: 100%; height: 100%"
               />
-              <div
+              <text-box v-if="objects[i].type == 'div'"></text-box>
+              <!-- <div
                 v-if="objects[i].type == 'div'"
                 style="width: 100%; height: 100%"
-              >{{objects[i].content}}</div>
+              >{{objects[i].content}}</div>-->
             </drr>
           </div>
         </v-card>
@@ -71,7 +74,10 @@
 </template>
 
 <script>
+import TextBox from "./components/TextBox.vue";
+
 export default {
+  components: { TextBox },
   data: () => ({
     dialog: false,
     drawer: null,
@@ -100,7 +106,7 @@ export default {
     },
 
     addImage(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100 };
+      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0 };
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "img",
@@ -111,7 +117,7 @@ export default {
     },
 
     addDiv(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100 };
+      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0 };
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "div",
@@ -119,18 +125,6 @@ export default {
       });
       this.slides[slide_index].visible.push(this.objects.length - 1);
     },
-
-    // itemChange(i) {
-    //   return rect => {
-    //     let style = this.slides[this.currentSlide].styles[i];
-
-    //     style.width = rect.w;
-    //     style.height = rect.h;
-    //     style.left = rect.x - rect.w / 2;
-    //     style.top = rect.y - rect.h / 2;
-
-    //     console.log(rect, i, style);
-    //   };
 
     itemChange(i) {
       return rect => {
@@ -140,6 +134,7 @@ export default {
         style.height = rect.h;
         style.x = rect.x;
         style.y = rect.y;
+        style.angle = rect.angle;
       };
     },
 
