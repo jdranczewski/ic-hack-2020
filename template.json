@@ -11,7 +11,7 @@ data = {
     },
     "slides": {
         0: {
-            "background_colour": black,
+            "background_colour": "black",
             "visible": [0],
             "transition-time": 1,
             "styles": {
@@ -21,7 +21,7 @@ data = {
             },
         },
         0: {
-            "background_colour": white,
+            "background_colour": "white",
             "visible": [0, 1],
             "transition-time": 1,
             "styles": {
