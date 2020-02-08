@@ -10,8 +10,8 @@
 
         <v-divider></v-divider>
 
-        <v-list-item-group color="primary">
-          <v-list-item v-for="(s, i) in slides" :key="i" @click="currentSlide=i">
+        <v-list-item-group color="primary" v-model="currentSlide" mandatory>
+          <v-list-item v-for="(s, i) in slides" :key="i">
             <v-list-item-content>
               <v-card
                 outlined
@@ -23,6 +23,13 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
+      <template v-slot:append>
+        <div class="pa-2">
+          <v-btn @click="addSlide(currentSlide)" color="primary"><v-icon>mdi-plus</v-icon></v-btn>
+          <v-btn @click="removeSlide(currentSlide)"><v-icon>mdi-minus</v-icon></v-btn>
+          <v-btn @click="copySlide(currentSlide)"><v-icon>mdi-content-copy</v-icon></v-btn>
+        </div>
+      </template>
     </v-navigation-drawer>
 
     <v-app-bar app color="blue darken-3" dark>
@@ -63,9 +70,6 @@
           </div>
         </v-card>
       </v-container>
-      <v-btn bottom color="pink" dark fab fixed right @click="addSlide()">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
     </v-content>
   </v-app>
 </template>
@@ -88,7 +92,7 @@ export default {
   }),
 
   methods: {
-    addSlide() {
+    addSlide(slide_index) {
       const slide = {
         background_colour: "white",
         visible: [],
@@ -96,7 +100,24 @@ export default {
         styles: []
       };
 
-      this.slides.push(slide);
+      this.slides.splice(slide_index+1, 0, slide);
+      this.currentSlide = slide_index+1
+    },
+
+    removeSlide(slide_index) {
+        if (this.slides.length > 1) {
+            this.slides.splice(slide_index, 1)
+        }
+        if (this.slides.length == slide_index) {
+            this.currentSlide = slide_index - 1
+        } else {
+            this.currentSlide = slide_index
+        }
+    },
+
+    copySlide(slide_index) {
+        this.slides.splice(slide_index, 0, JSON.parse(JSON.stringify(this.slides[slide_index])));
+        this.currentSlide = slide_index+1
     },
 
     addImage(slide_index) {
