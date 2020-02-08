@@ -11,7 +11,7 @@
         <v-divider></v-divider>
 
         <v-list-item-group color="primary">
-          <v-list-item v-for="(s, i) in slides" :key="i" @click="currentIndex=i">
+          <v-list-item v-for="(s, i) in slides" :key="i" @click="currentSlide=i">
             <v-list-item-content>
               <v-card
                 outlined
@@ -26,10 +26,10 @@
     </v-navigation-drawer>
 
     <v-app-bar app color="blue darken-3" dark>
-      <v-btn icon @click="addImage(currentIndex)">
+      <v-btn icon @click="addImage(currentSlide)">
         <v-icon>mdi-image</v-icon>
       </v-btn>
-      <v-btn icon @click="addDiv(currentIndex)">
+      <v-btn icon @click="addDiv(currentSlide)">
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
     </v-app-bar>
@@ -39,10 +39,17 @@
           class="d-inline-block mx-auto"
           height="600px"
           width="1000px"
-          :style="getCardStyle(slides[currentIndex])"
+          :style="getCardStyle(slides[currentSlide])"
         >
-          <div v-for="i in slides[currentIndex].visible" :key="i">
-            <drr :x="100" :y="100" :w="100" :h="100" :angle="0" v-on="{change: itemChange(i)}">
+          <div v-for="i in slides[currentSlide].visible" :key="i">
+            <drr
+              :x="slides[currentSlide].styles[i].x"
+              :y="slides[currentSlide].styles[i].y"
+              :w="slides[currentSlide].styles[i].width"
+              :h="slides[currentSlide].styles[i].height"
+              :angle="0"
+              v-on="{change: itemChange(i)}"
+            >
               <img
                 v-if="objects[i].type == 'img'"
                 :src="objects[i].src"
@@ -68,13 +75,13 @@ export default {
   data: () => ({
     dialog: false,
     drawer: null,
-    currentIndex: 0,
+    currentSlide: 0,
     slides: [
       {
         background_colour: "white",
         visible: [],
         transition_time: 1,
-        styles: []
+        styles: {}
       }
     ],
     objects: []
@@ -93,8 +100,8 @@ export default {
     },
 
     addImage(slide_index) {
-      const style = { height: 100, width: 100, x: 0, y: 0 };
-      this.slides[slide_index].styles.push(style);
+      const style = { height: 100, width: 100, x: 100, y: 100 };
+      this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "img",
         src:
@@ -104,8 +111,8 @@ export default {
     },
 
     addDiv(slide_index) {
-      const style = { height: 100, width: 100, x: 0, y: 0 };
-      this.slides[slide_index].styles.push(style);
+      const style = { height: 100, width: 100, x: 100, y: 100 };
+      this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "div",
         content: "Insert Text Here"
@@ -115,7 +122,7 @@ export default {
 
     // itemChange(i) {
     //   return rect => {
-    //     let style = this.slides[this.currentIndex].styles[i];
+    //     let style = this.slides[this.currentSlide].styles[i];
 
     //     style.width = rect.w;
     //     style.height = rect.h;
@@ -128,6 +135,11 @@ export default {
     itemChange(i) {
       return rect => {
         console.log(rect, i);
+        let style = this.slides[this.currentSlide].styles[i];
+        style.width = rect.w;
+        style.height = rect.h;
+        style.x = rect.x;
+        style.y = rect.y;
       };
     },
 
