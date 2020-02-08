@@ -1,14 +1,12 @@
 <template>
   <v-app id="app">
     <v-navigation-drawer v-model="drawer" permanent app>
-      <v-list dense>
+      <v-list>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="title">Slides App</v-list-item-title>
+            <v-list-item-title class="title" center>Slides App</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-
-        <v-divider></v-divider>
 
         <v-list-item-group color="primary" v-model="currentSlide" mandatory>
           <v-list-item v-for="(s, i) in slides" :key="i">
