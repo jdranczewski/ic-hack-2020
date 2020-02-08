@@ -12,7 +12,7 @@ data = {
     "slides": {
         0: {
             "background_colour": "black",
-            "visible": [0],
+            "visible": [],
             "transition-time": 1,
             "styles": {
                 0: {
@@ -149,8 +149,15 @@ document.onkeydown = function() { //CHECK FOR KEYPRESS
     var evt = evt || window.event;
     var charCode = evt.keyCode || evt.which;
     if ([32,39].includes(charCode)){ //INCREMENT SLIDE
-        if (slideId > Object.keys(data.slides).length-1){
-            console.log("slideshow done")
+        if (slideId >= Object.keys(data.slides).length-1){
+            var popup = window.confirm("Slideshow finished, exit?")
+            if (popup){
+                window.close();
+            }
+            else{
+                
+            }
+            console.log("slideshow done");
         }
         else {
             slideId=(slideId+1);
@@ -158,7 +165,7 @@ document.onkeydown = function() { //CHECK FOR KEYPRESS
     }
     else if (charCode == 37){ //DECREMENT SLIDE
         if (slideId == 0){
-            console.log("slideshow start")
+            console.log("slideshow start");
         }
         else {
             slideId=(slideId-1);
