@@ -10,8 +10,8 @@
 
         <v-divider></v-divider>
 
-        <v-list-item-group color="primary">
-          <v-list-item v-for="(s, i) in slides" :key="i" @click="currentSlide=i">
+        <v-list-item-group color="primary" v-model="currentSlide" mandatory>
+          <v-list-item v-for="(s, i) in slides" :key="i">
             <v-list-item-content>
               <v-card
                 outlined
@@ -23,9 +23,27 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
+
+      <template v-slot:append>
+        <v-row align="center" justify="center">
+          <div class="pa-2">
+            <v-btn-toggle rounded>
+              <v-btn @click="addSlide(currentSlide)" color="pink" dark>
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+              <v-btn @click="removeSlide(currentSlide)">
+                <v-icon>mdi-minus</v-icon>
+              </v-btn>
+              <v-btn @click="copySlide(currentSlide)">
+                <v-icon>mdi-content-copy</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+          </div>
+        </v-row>
+      </template>
     </v-navigation-drawer>
 
-    <v-app-bar app color="blue darken-3" dark>
+    <v-app-bar app color="darken-3" dark>
       <v-btn icon @click="addImage(currentSlide)">
         <v-icon>mdi-image</v-icon>
       </v-btn>
@@ -53,27 +71,20 @@
               v-on="{change: itemChange(i)}"
             >
               <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" />
-              <text-box2 v-if="objects[i].type == 'div'"></text-box2>
-              <!-- <div
-                v-if="objects[i].type == 'div'"
-                style="width: 100%; height: 100%"
-              >{{objects[i].content}}</div>-->
+              <div v-if="objects[i].type == 'div'" class="slideObject">{{objects[i].content}}</div>
             </drr>
           </div>
         </v-card>
       </v-container>
-      <v-btn bottom color="pink" dark fab fixed right @click="addSlide()">
+      <!-- <v-btn bottom color="pink" dark fab fixed right @click="addSlide()">
         <v-icon>mdi-plus</v-icon>
-      </v-btn>
+      </v-btn>-->
     </v-content>
   </v-app>
 </template>
 
 <script>
-import TextBox2 from "./components/TextBox2.vue";
-
 export default {
-  components: { TextBox2 },
   data: () => ({
     dialog: false,
     drawer: null,
@@ -82,7 +93,7 @@ export default {
       {
         background_colour: "white",
         visible: [],
-        transition_time: 1,
+        transition_time: 0,
         styles: {}
       }
     ],
@@ -90,16 +101,36 @@ export default {
   }),
 
   methods: {
-    addSlide() {
+    addSlide(slide_index) {
       const slide = {
         background_colour: "white",
         visible: [],
         transition_time: 0,
-        styles: []
+        styles: {}
       };
 
-      // this.slides.push(slide);
-      this.slides.splice(this.currentSlide + 1, 0, slide);
+      this.slides.splice(slide_index + 1, 0, slide);
+      this.currentSlide = slide_index + 1;
+    },
+
+    removeSlide(slide_index) {
+      if (this.slides.length > 1) {
+        this.slides.splice(slide_index, 1);
+      }
+      if (this.slides.length == slide_index) {
+        this.currentSlide = slide_index - 1;
+      } else {
+        this.currentSlide = slide_index;
+      }
+    },
+
+    copySlide(slide_index) {
+      this.slides.splice(
+        slide_index,
+        0,
+        JSON.parse(JSON.stringify(this.slides[slide_index]))
+      );
+      this.currentSlide = slide_index + 1;
     },
 
     addImage(slide_index) {
