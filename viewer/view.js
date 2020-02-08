@@ -39,19 +39,58 @@ data = {
     }
 }
 
-//==============ADD OBJECTS=============================
-var slideshow = document.getElementById("slideshow").innerHTML;
 
+var slideshow = document.getElementById("slideshow");
+slideId = 0
+
+//==============ADD OBJECTS=============================
 function addObject(data){
-    var count = data.objects.length;
-    for(var i = 0; i < count; i++) {
-        document.write(objects[i]);
-        //document.createElement(objects[i]);
+
+    for(var item in data.objects){
+        var type = (data.objects[item].type);
+        console.log(type, typeof type);
+        if (type == "div"){
+            var object = document.createElement(type)
+            object.innerHTML = data.objects[item].content
+        }
+        else if (type == "img"){
+            var object = document.createElement(type)
+            object.src = data.objects[item].src
+        }
+        object.id = "object-"+item;
+        slideshow.appendChild(object);
     }
 }
-    
+
+
+//==============SCAN FOR KEY PRESSES=============================
+
+document.onkeydown = function() {
+    var evt = evt || window.event;
+    var charCode = evt.keyCode || evt.which;
+    if ([32,39].includes(charCode)){
+        if (slideId > Object.keys(data.slides).length-1){
+            console.log("slideshow done")
+        }
+        else {
+            slideId=(slideId+1);
+        }
+    }
+    else if (charCode == 37){
+        if (slideId == 0){
+            console.log("slideshow start")
+        }
+        else {
+            slideId=(slideId-1);
+        }
+    }
+    console.log(slideId)
+};
 addObject(data)
     //slideshow.appendChild(OBJECT VARIABLE)
+
+
+
 
 
 
