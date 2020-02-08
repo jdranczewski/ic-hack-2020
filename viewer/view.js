@@ -117,8 +117,6 @@ function make_full_css(data) {
     console.log(stylesheet);
 }
 
-make_full_css(data)
-
 var slideshow = document.querySelector(".slideshow");
 slideId = 0
 
@@ -183,5 +181,9 @@ document.onkeydown = function() { //CHECK FOR KEYPRESS
     document.querySelector(".slideshow").id = "slide-"+slideId
 };
 
+function start_slides(data) {
+    make_full_css(data);
+    addObject(data);
+}
 
-addObject(data) 
+start_slides(data)
