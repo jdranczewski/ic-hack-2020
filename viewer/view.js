@@ -103,9 +103,9 @@ function make_full_css(data) {
         }
 
         // Make visible things visible
-        stylesheet += "\n/*Visibility*/\n"
+        stylesheet += "\n/*Visibility and pointer events*/\n"
         for (object_id in slide["visible"]) {
-            stylesheet += `#slide-${slide_id} #object-${object_id} {opacity: 1}\n`
+            stylesheet += `#slide-${slide_id} #object-${object_id} {opacity: 1; pointer-events: auto}\n`
         }
 
     }
