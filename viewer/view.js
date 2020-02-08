@@ -6,11 +6,19 @@ data = {
         },
         1: {
             "type": "img",
-            "src": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+            "src": "cs.png"
+        },
+        2: {
+            "type": "img",
+            "src": "s.png"
+        },
+        3: {
+            "type": "img",
+            "src": "lide.png"
         }
     },
-    "slides": {
-        0: {
+    "slides": { //dictionary
+        0: { //dictionary
             "background_colour": "black",
             "visible": [],
             "transition-time": 1,
@@ -19,23 +27,89 @@ data = {
                     "color": "white"
                 },
                 1:{
-                    "left": "0"
+                    "left": "0",
+                    "height":"100px",
+                    "width":"auto",
+                },
+                2:{
+                    "left": "140",
+                    "height":"100px",
+                    "width":"auto"
                 }
             },
         },
         1: {
             "background_colour": "white",
-            "visible": [0, 1],
+            "visible": [1,2],
             "transition-time": 1,
             "styles": {
                 0: {
                     "color": "black"
                 },
                 1: {
-                    "left": "100px"
+                    "left": "100px",
+                    "height":"100px",
+                    "width":"auto"
+                },
+                2: {
+                    "left": "240px",
+                    "height":"100px",
+                    "width":"auto"
                 }
             },
-        }
+        },
+            2: {
+                "background_colour": "white",
+                "visible": [1,2],
+                "transition-time": 1,
+                "styles": {
+                    0: {
+                        "color": "black"
+                    },
+                    1: {
+                        "left": "100px",
+                        "height":"100px",
+                        "width":"auto"
+                    },
+                    2: {
+                        "left": "450px",
+                        "height":"100px",
+                        "width":"auto"
+                    },
+                    3: {
+                        "left": "260px",
+                        "top": "100px",
+                        "height":"100px",
+                        "width":"auto"
+                    },
+                },
+        },
+        3: {
+            "background_colour": "white",
+            "visible": [1,2,3],
+            "transition-time": 1,
+            "styles": {
+                0: {
+                    "color": "black"
+                },
+                1: {
+                    "left": "100px",
+                    "height":"100px",
+                    "width":"auto"
+                },
+                2: {
+                    "left": "450px",
+                    "height":"100px",
+                    "width":"auto"
+                },
+                3: {
+                    "left": "260px",
+                    "top": "0px",
+                    "height":"100px",
+                    "width":"auto"
+                },
+            },
+    },
     }
 }
 
@@ -55,7 +129,6 @@ function make_full_css(data) {
     for (slide_id in data["slides"]) {
         slide_id = parseInt(slide_id)
         stylesheet += `\n\n/*---Slide ${slide_id}---*/\n`
-        console.log(slide_id);
         slide = data["slides"][slide_id];
 
         // Generate styles for the slide itself
@@ -70,10 +143,9 @@ function make_full_css(data) {
         // Generate styles for objects that are in the next slide, but not this one
         stylesheet += "\n/*The next slide*/\n"
         next = slide_id+1;
-        if (data["slides"][next] !== undefined) {
-            console.log("there exists a next slide")
-            for (object_id in data["slides"][next]["visible"]) {
-                object_id = parseInt(object_id)
+        if (data["slides"][next] !== undefined) { //loop may be broken
+            for (i in data["slides"][next]["visible"]) {
+                object_id = data["slides"][next]["visible"][i]
                 if (slide["styles"][object_id] == undefined){
                     stylesheet += generate_css(slide_id, object_id, data["slides"][next]["styles"][object_id]);
                 }
@@ -85,9 +157,8 @@ function make_full_css(data) {
         stylesheet += "\n/*The previous slide*/\n"
         prev = slide_id-1;
         if (prev >= 0) {
-            console.log("there exists a prev slide")
-            for (object_id in data["slides"][prev]["visible"]) {
-                object_id = parseInt(object_id)
+            for (i in data["slides"][prev]["visible"]) {
+                object_id = data["slides"][prev]["visible"][i]
                 if (slide["styles"][object_id] == undefined){
                     stylesheet += generate_css(slide_id, object_id, data["slides"][prev]["styles"][object_id]);
                 }
@@ -97,14 +168,13 @@ function make_full_css(data) {
         // Generate styles for this slide
         stylesheet += "\n/*This slide*/\n"
         for (object_id in slide["styles"]) {
-            console.log("F")
-            console.log(object_id)
             stylesheet += generate_css(slide_id, object_id, slide["styles"][object_id]);
         }
 
         // Make visible things visible
         stylesheet += "\n/*Visibility and pointer events*/\n"
-        for (object_id in slide["visible"]) {
+        for (i in slide["visible"]) {
+            object_id = slide["visible"][i]
             stylesheet += `#slide-${slide_id} #object-${object_id} {opacity: 1; pointer-events: auto}\n`
         }
 
@@ -125,7 +195,6 @@ function addObject(data){
 
     for(var item in data.objects){ //ITERATE OVER OBJECTS
         var type = (data.objects[item].type);
-        console.log(type, typeof type);
         if (type == "div"){ //CREATES DIV BY ADDING CONTENT 
             var object = document.createElement(type)
             object.innerHTML = data.objects[item].content
@@ -155,7 +224,6 @@ document.onkeydown = function() { //CHECK FOR KEYPRESS
             else{
                 
             }
-            console.log("slideshow done");
         }
         else {
             slideId=(slideId+1);
@@ -163,7 +231,6 @@ document.onkeydown = function() { //CHECK FOR KEYPRESS
     }
     else if (charCode == 37){ //DECREMENT SLIDE
         if (slideId == 0){
-            console.log("slideshow start");
         }
         else {
             slideId=(slideId-1);
@@ -177,7 +244,7 @@ document.onkeydown = function() { //CHECK FOR KEYPRESS
         }
         
     }
-    console.log(slideId)
+    console.log("slide is: ", slideId)
     document.querySelector(".slideshow").id = "slide-"+slideId
 };
 
