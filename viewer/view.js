@@ -2,7 +2,7 @@ data = {
     "objects": {
         0: {
             "type": "div",
-            "content": "Hello World!"
+            "content": '<iframe width="420" height="315"src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>'
         },
         1: {
             "type": "img",
@@ -12,7 +12,7 @@ data = {
     "slides": {
         0: {
             "background_colour": "black",
-            "visible": [0],
+            "visible": [],
             "transition-time": 1,
             "styles": {
                 0: {
@@ -123,14 +123,14 @@ slideId = 0
 //==============ADD OBJECTS=============================
 function addObject(data){
 
-    for(var item in data.objects){
+    for(var item in data.objects){ //ITERATE OVER OBJECTS
         var type = (data.objects[item].type);
         console.log(type, typeof type);
-        if (type == "div"){
+        if (type == "div"){ //CREATES DIV BY ADDING CONTENT 
             var object = document.createElement(type)
             object.innerHTML = data.objects[item].content
         }
-        else if (type == "img"){
+        else if (type == "img"){ //CREATES IMAGE
             var object = document.createElement(type)
             object.src = data.objects[item].src
         }
@@ -143,26 +143,33 @@ function addObject(data){
 
 //==============SCAN FOR KEY PRESSES=============================
 
-document.onkeydown = function() {
+document.onkeydown = function() { //CHECK FOR KEYPRESS
     var evt = evt || window.event;
     var charCode = evt.keyCode || evt.which;
-    if ([32,39].includes(charCode)){
-        if (slideId > Object.keys(data.slides).length-1){
-            console.log("slideshow done")
+    if ([32,39].includes(charCode)){ //INCREMENT SLIDE
+        if (slideId >= Object.keys(data.slides).length-1){
+            var popup = window.confirm("Slideshow finished, exit?")
+            if (popup){
+                window.close();
+            }
+            else{
+                
+            }
+            console.log("slideshow done");
         }
         else {
             slideId=(slideId+1);
         }
     }
-    else if (charCode == 37){
+    else if (charCode == 37){ //DECREMENT SLIDE
         if (slideId == 0){
-            console.log("slideshow start")
+            console.log("slideshow start");
         }
         else {
             slideId=(slideId-1);
         }
     }
-    else if (charCode == 70){
+    else if (charCode == 70){ //TOGGLE FULLSCREEN
         if (document.fullscreenElement) {
             document.exitFullscreen();
         } else {
@@ -173,7 +180,6 @@ document.onkeydown = function() {
     console.log(slideId)
     document.querySelector(".slideshow").id = "slide-"+slideId
 };
-
 
 function start_slides(data) {
     make_full_css(data);
