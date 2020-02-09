@@ -549,7 +549,7 @@ export default {
           console.log("box width: ", box_width);
 
           var fontSize = 0;
-          if (this.slides[i].styles[j]["font-size"]) {
+          if (this.slides[i].styles[j]["font-size"] !== undefined) {
             if (fontSize.endsWith("vh")) {
               const n = parseInt(fontSize.substring(0, fontSize.length - 2));
               transfer.slides[i].styles[j]["font-size"] =
