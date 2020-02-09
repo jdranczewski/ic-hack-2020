@@ -1,7 +1,11 @@
 function generate_css(slide_id, object_id, styles) {
     current_style = "";
     for (key in styles) {
-        current_style += `${key}: ${styles[key]};`
+        if (key=="#arbitrary-style") {
+            current_style += `;${styles[key]};`
+        } else {
+            current_style += `${key}: ${styles[key]};`
+        }
     }
     return `#slide-${slide_id} #object-${object_id} {${current_style}}\n`
 }
