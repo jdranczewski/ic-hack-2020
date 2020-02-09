@@ -217,7 +217,18 @@ export default {
     },
 
     addDiv(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "font-size": "20px", "color": "#000000FF", "background-color": "#00000000", "border-radius":0};
+      const style = {
+        height: 100,
+        width: 100,
+        x: 100,
+        y: 100,
+        angle: 0,
+        "font-family": "Arial, Helvetica, sans-serif",
+        "font-size": "20px",
+        color: "#000000FF",
+        "background-color": "#00000000",
+        "border-radius": 0
+      };
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "div",
