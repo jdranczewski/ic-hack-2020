@@ -79,6 +79,12 @@
       <v-btn icon @click="addDiv(currentSlide)">
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
+      <v-btn icon v-if="selected_items.length > 0" @click="copySelectedObject">
+        <v-icon>mdi-content-copy</v-icon>
+      </v-btn>
+      <v-btn icon v-if="clipboard !== null" @click="pasteFromClipboard">
+        <v-icon>mdi-content-paste</v-icon>
+      </v-btn>
       <v-spacer></v-spacer>
       <v-btn @click="generateOut" dark right>
         <v-icon left>mdi-floppy</v-icon>
@@ -329,6 +335,7 @@ export default {
     currentSlide: 0,
     selected_item: null,
     selected_items: [],
+    clipboard: null,
     slides: [
       {
         background_colour: "#FFFFFF",
@@ -488,6 +495,18 @@ export default {
         // this.selected_items.pop(i)
         console.log(this.selected_items);
       };
+    },
+
+    copySelectedObject() {
+      this.clipboard = { obj: this.last_item(), fromSlide: this.currentSlide };
+    },
+
+    pasteFromClipboard() {
+      if (this.clipboard !== null && !this.slides[this.currentSlide].visible.includes(this.clipboard.obj)) {
+        this.slides[this.currentSlide].visible.push(this.clipboard.obj);
+        this.slides[this.currentSlide].styles[this.clipboard.obj] = JSON.parse(JSON.stringify(
+          this.slides[this.clipboard.fromSlide].styles[this.clipboard.obj]));
+      }
     },
 
     last_item() {
