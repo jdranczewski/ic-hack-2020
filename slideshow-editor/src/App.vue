@@ -16,7 +16,28 @@
                 class="d-inline-block mx-auto"
                 height="120px"
                 :style="getCardStyle(s)"
-              >{{i+1}}</v-card>
+                >
+                  <v-card-title>{{i+1}}
+                  </v-card-title>
+                  <v-card-subtitle>
+                    <v-container>
+                    <v-row :align="start" :justify="end">
+                    <v-col></v-col>
+                    <v-col class="pa-0" :cols="3.5">
+                    <v-text-field
+                      suffix="s"
+                      v-model="slides[i]['transition_time']"
+                      label="Time"
+                      type="number"
+                    ></v-text-field>
+                    </v-col>
+                    <v-col :cols="3">
+                    <v-btn icon><v-icon>mdi-format-color-fill</v-icon></v-btn>
+                    </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-subtitle>
+              </v-card>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
