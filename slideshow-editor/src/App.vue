@@ -83,18 +83,17 @@
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
+      <v-btn @click="generateOut" dark right>
+        <v-icon left>mdi-floppy</v-icon>
+      </v-btn>
+      <v-btn icon @click="loadIn" dark right>
+        <v-icon left>mdi-download</v-icon>
+      </v-btn>
       <v-btn @click="present" light right>
         <v-icon left>mdi-presentation-play</v-icon>
         Present
       </v-btn>
-      <v-btn @click="generateOut" light right>
-        <v-icon left>mdi-download</v-icon>
-        Save File
-      </v-btn>
-      <v-btn @click="loadIn" light right>
-        <v-icon left>mdi-floppy</v-icon>
-        Load File
-      </v-btn>
+      
       <!--<template>
         <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
