@@ -89,6 +89,7 @@
       <!--<v-btn icon @click="addDiv(currentSlide)">
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
+
       <v-spacer></v-spacer> -->
     <template>
       <v-tooltip bottom>
@@ -101,6 +102,13 @@
       <span>Add Div element</span>
       </v-tooltip>
       </template>
+      <v-btn icon v-if="selected_items.length > 0" @click="copySelectedObject">
+        <v-icon>mdi-content-copy</v-icon>
+      </v-btn>
+      <v-btn icon v-if="clipboard !== null" @click="pasteFromClipboard">
+        <v-icon>mdi-content-paste</v-icon>
+      </v-btn>
+
       <v-spacer></v-spacer>
       <!--
       <v-btn @click="generateOut" dark right>
@@ -112,16 +120,18 @@
       <template v-slot:activator="{ on }">
       <v-btn icon @click="generateOut" dark right v-on="on">
         <v-icon left>mdi-floppy</v-icon>
-      
-      </v-btn>
+        </v-btn>
       </template>
       <span>Save presentation</span>
       </v-tooltip>
-      </template>
+     </template>
+
+      
 
     <template>
       <v-tooltip bottom>
       <template v-slot:activator="{ on }">
+
       <v-btn icon @click="loadIn" dark right v-on="on">
         <v-icon left>mdi-download</v-icon>
       
@@ -209,10 +219,10 @@
 
                           <v-card>
                             <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['color']"></v-color-picker>
-                            
+
                           </v-card>
                         </v-menu>
-                    </v-col> 
+                    </v-col>
                     <v-col :cols="3" v-else-if="i == 'background-color'" >
                         <v-menu
                           :close-on-content-click="false"
@@ -224,7 +234,7 @@
                           </template>
 
                           <v-card>
-                            
+
                             <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['background-color']" ></v-color-picker>
                           </v-card>
                         </v-menu>
@@ -235,7 +245,7 @@
                 :type="(['angle', 'x', 'y', 'width', 'height'].includes(i)) ? 'number' : 'text'"
                 v-model="slides[currentSlide]['styles'][last_item()][i]"
               ></v-text-field>
-              
+
             </v-list-item-content> <!--ADD A CHECK FOR COLOUR, THEN ADD COLOUR PICKER ELEMENT <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker> -->
           </v-list-item>
         </v-list-item-group>
@@ -249,10 +259,10 @@
             </v-btn>
             <v-btn-toggle rounded>
               <v-btn @click="editStyleOverlay(currentSlide-1)">
-                <v-icon>mdi-plus</v-icon>
+                <v-icon>mdi-chevron-double-left</v-icon>
               </v-btn>
               <v-btn @click="editStyleOverlay(currentSlide+1)">
-                <v-icon>mdi-content-copy</v-icon>
+                <v-icon>mdi-chevron-double-right</v-icon>
               </v-btn>
             </v-btn-toggle>
             <v-btn @click="copyElement(currentSlide+1)" icon>
@@ -263,63 +273,52 @@
       </template>
     </v-navigation-drawer>
 
-    <v-overlay :value="overlay" z-index="100">
-      <v-card
-        id="renderbox"
-        ref="renderbox"
-        class="d-inline-block mx-auto"
-        height="600px"
-        width="1067px"
-        :style="getCardStyle(slides[currentSlide])"
+    <v-overlay
+        :value="overlay"
+        z-index="100"
+    >
+    <v-card id="renderbox" ref="renderbox"
+      class="d-inline-block mx-auto"
+      height="600px"
+      width="1067px"
+      :style="getCardStyle(slides[currentSlide])"
+    >
+      <div v-for="i in slides[slide_overlay].visible" :key="i"  style="opacity: 0.25">
+        <drr
+          :x="slides[slide_overlay].styles[i].x"
+          :y="slides[slide_overlay].styles[i].y"
+          :w="slides[slide_overlay].styles[i].width"
+          :h="slides[slide_overlay].styles[i].height"
+          :angle="slides[slide_overlay].styles[i].angle"
+          :selectable="false"
+        >
+          <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" :style="make_style(slides[slide_overlay].styles[i])"/>
+          <div v-if="objects[i].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[i])">{{objects[i].content}}</div>
+        </drr>
+      </div>
+      <div v-if="object_overlay !== null">
+        <drr
+          :x="slides[slide_overlay].styles[object_overlay].x"
+          :y="slides[slide_overlay].styles[object_overlay].y"
+          :w="slides[slide_overlay].styles[object_overlay].width"
+          :h="slides[slide_overlay].styles[object_overlay].height"
+          :angle="slides[slide_overlay].styles[object_overlay].angle"
+          v-on="{change: itemChangeOverlay()}"
+        >
+          <img v-if="objects[object_overlay].type == 'img'" :src="objects[object_overlay].src" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])"/>
+          <div v-if="objects[object_overlay].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])">{{objects[object_overlay].content}}</div>
+        </drr>
+      </div>
+    </v-card>
+    <v-row align="center" justify="center">
+      <v-btn
+        color="success"
+        class="mt-2"
+        @click="overlay = !overlay"
       >
-        <div v-for="i in slides[slide_overlay].visible" :key="i">
-          <drr
-            :x="slides[slide_overlay].styles[i].x"
-            :y="slides[slide_overlay].styles[i].y"
-            :w="slides[slide_overlay].styles[i].width"
-            :h="slides[slide_overlay].styles[i].height"
-            :angle="slides[slide_overlay].styles[i].angle"
-            :selectable="false"
-          >
-            <img
-              v-if="objects[i].type == 'img'"
-              :src="objects[i].src"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[i])"
-            />
-            <div
-              v-if="objects[i].type == 'div'"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[i])"
-            >{{objects[i].content}}</div>
-          </drr>
-        </div>
-        <div v-if="object_overlay !== null">
-          <drr
-            :x="slides[slide_overlay].styles[object_overlay].x"
-            :y="slides[slide_overlay].styles[object_overlay].y"
-            :w="slides[slide_overlay].styles[object_overlay].width"
-            :h="slides[slide_overlay].styles[object_overlay].height"
-            :angle="slides[slide_overlay].styles[object_overlay].angle"
-            v-on="{change: itemChangeOverlay()}"
-          >
-            <img
-              v-if="objects[object_overlay].type == 'img'"
-              :src="objects[object_overlay].src"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[object_overlay])"
-            />
-            <div
-              v-if="objects[object_overlay].type == 'div'"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[object_overlay])"
-            >{{objects[object_overlay].content}}</div>
-          </drr>
-        </div>
-      </v-card>
-      <v-row align="center" justify="center">
-        <v-btn color="success" class="mt-2" @click="overlay = !overlay">Done!</v-btn>
-      </v-row>
+        Done!
+      </v-btn>
+    </v-row>
     </v-overlay>
   </v-app>
 </template>
@@ -332,6 +331,7 @@ export default {
     currentSlide: 0,
     selected_item: null,
     selected_items: [],
+    clipboard: null,
     slides: [
       {
         background_colour: "#FFFFFF",
@@ -439,7 +439,8 @@ export default {
         y: 100,
         angle: 0,
         "font-family": "Arial, Helvetica, sans-serif",
-        "font-size": "20px",
+        "font-size": "2vh",
+        "text-align": "center",
         color: "#000000FF",
         "background-color": "#00000000",
         "border-radius": 0,
@@ -491,6 +492,18 @@ export default {
         // this.selected_items.pop(i)
         console.log(this.selected_items);
       };
+    },
+
+    copySelectedObject() {
+      this.clipboard = { obj: this.last_item(), fromSlide: this.currentSlide };
+    },
+
+    pasteFromClipboard() {
+      if (this.clipboard !== null && !this.slides[this.currentSlide].visible.includes(this.clipboard.obj)) {
+        this.slides[this.currentSlide].visible.push(this.clipboard.obj);
+        this.slides[this.currentSlide].styles[this.clipboard.obj] = JSON.parse(JSON.stringify(
+          this.slides[this.clipboard.fromSlide].styles[this.clipboard.obj]));
+      }
     },
 
     last_item() {
