@@ -252,10 +252,10 @@
             </v-btn>
             <v-btn-toggle rounded>
               <v-btn @click="editStyleOverlay(currentSlide-1)">
-                <v-icon>mdi-plus</v-icon>
+                <v-icon>mdi-chevron-double-left</v-icon>
               </v-btn>
               <v-btn @click="editStyleOverlay(currentSlide+1)">
-                <v-icon>mdi-content-copy</v-icon>
+                <v-icon>mdi-chevron-double-right</v-icon>
               </v-btn>
             </v-btn-toggle>
             <v-btn @click="copyElement(currentSlide+1)" icon>
@@ -266,60 +266,37 @@
       </template>
     </v-navigation-drawer>
 
-    <v-overlay :value="overlay" z-index="100">
-      <v-card
-        id="renderbox"
-        ref="renderbox"
-        class="d-inline-block mx-auto"
-        height="600px"
-        width="1067px"
-        :style="getCardStyle(slides[currentSlide])"
-      >
-        <div v-for="i in slides[slide_overlay].visible" :key="i">
-          <drr
-            :x="slides[slide_overlay].styles[i].x"
-            :y="slides[slide_overlay].styles[i].y"
-            :w="slides[slide_overlay].styles[i].width"
-            :h="slides[slide_overlay].styles[i].height"
-            :angle="slides[slide_overlay].styles[i].angle"
-            :selectable="false"
-          >
-            <img
-              v-if="objects[i].type == 'img'"
-              :src="objects[i].src"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[i])"
-            />
-            <div
-              v-if="objects[i].type == 'div'"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[i])"
-            >{{objects[i].content}}</div>
-          </drr>
-        </div>
-        <div v-if="object_overlay !== null">
-          <drr
-            :x="slides[slide_overlay].styles[object_overlay].x"
-            :y="slides[slide_overlay].styles[object_overlay].y"
-            :w="slides[slide_overlay].styles[object_overlay].width"
-            :h="slides[slide_overlay].styles[object_overlay].height"
-            :angle="slides[slide_overlay].styles[object_overlay].angle"
-            v-on="{change: itemChangeOverlay()}"
-          >
-            <img
-              v-if="objects[object_overlay].type == 'img'"
-              :src="objects[object_overlay].src"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[object_overlay])"
-            />
-            <div
-              v-if="objects[object_overlay].type == 'div'"
-              class="slideObject"
-              :style="make_style(slides[slide_overlay].styles[object_overlay])"
-            >{{objects[object_overlay].content}}</div>
-          </drr>
-        </div>
-      </v-card>
+    <v-overlay
+        :value="overlay"
+        z-index="100"
+    >
+      <div v-for="i in slides[slide_overlay].visible" :key="i"  style="opacity: 0.25">
+        <drr
+          :x="slides[slide_overlay].styles[i].x"
+          :y="slides[slide_overlay].styles[i].y"
+          :w="slides[slide_overlay].styles[i].width"
+          :h="slides[slide_overlay].styles[i].height"
+          :angle="slides[slide_overlay].styles[i].angle"
+          :selectable="false"
+        >
+          <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" :style="make_style(slides[slide_overlay].styles[i])"/>
+          <div v-if="objects[i].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[i])">{{objects[i].content}}</div>
+        </drr>
+      </div>
+      <div v-if="object_overlay !== null">
+        <drr
+          :x="slides[slide_overlay].styles[object_overlay].x"
+          :y="slides[slide_overlay].styles[object_overlay].y"
+          :w="slides[slide_overlay].styles[object_overlay].width"
+          :h="slides[slide_overlay].styles[object_overlay].height"
+          :angle="slides[slide_overlay].styles[object_overlay].angle"
+          v-on="{change: itemChangeOverlay()}"
+        >
+          <img v-if="objects[object_overlay].type == 'img'" :src="objects[object_overlay].src" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])"/>
+          <div v-if="objects[object_overlay].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])">{{objects[object_overlay].content}}</div>
+        </drr>
+      </div>
+    </v-card>
       <v-row align="center" justify="center">
         <v-btn color="success" class="mt-2" @click="overlay = !overlay">Done!</v-btn>
       </v-row>
@@ -443,7 +420,8 @@ export default {
         y: 100,
         angle: 0,
         "font-family": "Arial, Helvetica, sans-serif",
-        "font-size": "20px",
+        "font-size": "2vh",
+        "text-align": "center",
         color: "#000000FF",
         "background-color": "#00000000",
         "border-radius": 0,
