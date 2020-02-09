@@ -90,7 +90,7 @@
     </v-app-bar>
 
     <v-content>
-      <v-container class="fill-height" fluid>
+      <v-container id="renderbox" ref="renderbox" class="fill-height" fluid>
         <v-card
           class="d-inline-block mx-auto"
           height="600px"
@@ -209,21 +209,23 @@ export default {
           console.log(i)
           //console.log(this.slides[i]["styles"]["height"])
           for(var j in this.slides[i].styles){
-            var box_width = this.$refs.renderbox.clientWidth;
             var box_height = this.$refs.renderbox.clientHeight;
+            var box_width = this.$refs.renderbox.clientWidth;
             transfer.slides[i].styles[j]["width"]= 100*(this.slides[i].styles[j].width)/box_width + "%"
             transfer.slides[i].styles[j]["height"] = 100*(this.slides[i].styles[j].height)/box_height + "%"
             transfer.slides[i].styles[j]["left"] = 100*(this.slides[i].styles[j].x - this.slides[i].styles[j].width/2)/box_width + "%"
             transfer.slides[i].styles[j]["top"] = 100*(this.slides[i].styles[j].y - this.slides[i].styles[j].height/2 )/box_height + "%"
-            //console.log("left is (in percent): ", left)
+            transfer.slides[i].styles[j]["transform"] = "rotate("+this.slides[i].styles[j].angle+"deg)"
+            console.log("left is (in percent): ", transfer.slides[i].styles[j]["left"] )
+            console.log("angle is (in percent): ", "rotate("+this.slides[i].styles[j].angle+"deg)" )
             //console.log("top is (in percent): ", top)
             //console.log("box height: ", box_height )
             //console.log("box width: ", box_width )
-            
+
           }
         }
-
     },
+
     luminance(hex) {
       var bigint = parseInt(hex.substring(1), 16);
       var r = (bigint >> 16) & 255;
@@ -234,11 +236,15 @@ export default {
     },
 
     present() {
-        console.log(this);
+        //console.log(this);
         var transfer = {
-            "slides": this.slides,
-            "objects": this.objects
+            //"slides": this.slides,
+            //"objects": this.objects,
+            "slides" :JSON.parse(JSON.stringify(this.slides)),
+            "objects" :JSON.parse(JSON.stringify(this.objects)),
+
         }
+        this.scaleStyleDataBeforeTransfer(transfer)
         localStorage.setItem("data", JSON.stringify(transfer));
         window.open("/viewer.html", "Slideshow", "width=auto, height=auto");
     }
