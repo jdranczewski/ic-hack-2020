@@ -296,7 +296,6 @@
           <div v-if="objects[object_overlay].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])">{{objects[object_overlay].content}}</div>
         </drr>
       </div>
-    </v-card>
       <v-row align="center" justify="center">
         <v-btn color="success" class="mt-2" @click="overlay = !overlay">Done!</v-btn>
       </v-row>
