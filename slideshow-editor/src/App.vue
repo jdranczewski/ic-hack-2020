@@ -90,11 +90,11 @@
     </v-app-bar>
 
     <v-content>
-      <v-container id="renderbox" ref="renderbox" class="fill-height" fluid>
-        <v-card
+      <v-container  class="fill-height" fluid>
+        <v-card id="renderbox" ref="renderbox"
           class="d-inline-block mx-auto"
           height="600px"
-          width="1000px"
+          width="1067px"
           :style="getCardStyle(slides[currentSlide])"
         >
           <div v-for="i in slides[currentSlide].visible" :key="i">
@@ -209,18 +209,22 @@ export default {
           console.log(i)
           //console.log(this.slides[i]["styles"]["height"])
           for(var j in this.slides[i].styles){
-            var box_height = this.$refs.renderbox.clientHeight;
-            var box_width = this.$refs.renderbox.clientWidth;
-            transfer.slides[i].styles[j]["width"]= 100*(this.slides[i].styles[j].width)/box_width + "%"
-            transfer.slides[i].styles[j]["height"] = 100*(this.slides[i].styles[j].height)/box_height + "%"
+            //var box_height = this.$refs.renderbox.clientHeight -24;
+            //var box_width = this.$refs.renderbox.clientWidth -24 ; 
+            var box_height =600
+            var box_width = 1067
+            var angle = this.slides[i].styles[j].angle * Math.PI/180
+            console.log(angle)
+            transfer.slides[i].styles[j]["width"]= 100*(this.slides[i].styles[j].width)/(box_width) + "%"
+            transfer.slides[i].styles[j]["height"] = 100*(this.slides[i].styles[j].height)/(box_height) + "%"
             transfer.slides[i].styles[j]["left"] = 100*(this.slides[i].styles[j].x - this.slides[i].styles[j].width/2)/box_width + "%"
             transfer.slides[i].styles[j]["top"] = 100*(this.slides[i].styles[j].y - this.slides[i].styles[j].height/2 )/box_height + "%"
             transfer.slides[i].styles[j]["transform"] = "rotate("+this.slides[i].styles[j].angle+"deg)"
             console.log("left is (in percent): ", transfer.slides[i].styles[j]["left"] )
             console.log("angle is (in percent): ", "rotate("+this.slides[i].styles[j].angle+"deg)" )
             //console.log("top is (in percent): ", top)
-            //console.log("box height: ", box_height )
-            //console.log("box width: ", box_width )
+            console.log("box height: ", box_height )
+            console.log("box width: ", box_width )
 
           }
         }
