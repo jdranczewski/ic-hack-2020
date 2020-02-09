@@ -80,9 +80,57 @@
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
+      <v-btn @click="generateOut" dark right>
+        <v-icon left>mdi-floppy</v-icon>
+      </v-btn>
+      <v-btn icon @click="loadIn" dark right>
+        <v-icon left>mdi-download</v-icon>
+      </v-btn>
       <v-btn @click="present" light right>
         <v-icon left>mdi-presentation-play</v-icon>Present
       </v-btn>
+      
+      <!--<template>
+        <v-dialog v-model="dialog" persistent max-width="600px">
+      <template v-slot:activator="{ on }">
+        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-download</v-icon>
+        
+       Save file
+      </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Save file</span>
+        </v-card-title>
+        <v-text-field v-model="name" label="Slideshow name" required></v-text-field>
+      <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click='generateOut("name"), dialog = false'>Output</v-btn>
+        </v-card-actions>
+      </v-card>
+      </v-dialog>
+      </template>
+      <template>
+        <v-dialog v-model="dialog" persistent max-width="600px">
+      <template v-slot:activator="{ on }">
+        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-floppy</v-icon>
+        
+       Load file
+      </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Output file</span>
+        </v-card-title>
+        <v-text-field v-model="name" label="Slideshow name" required></v-text-field>
+      <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click='loadIn("name"), dialog = false'>Output</v-btn>
+        </v-card-actions>
+      </v-card>
+      </v-dialog>
+      </template> -->
+      
     </v-app-bar>
 
     <v-content>
@@ -141,12 +189,51 @@
           </v-list-item>
           <v-list-item v-for="(s, i) in slides[currentSlide]['styles'][last_item()]" :key="i">
             <v-list-item-content>
-              <v-text-field
+              <!-- <v-button v-if="i == 'background-color'">
+                Colour
+                <v-color-picker v-model="slides[currentSlide]['styles']['background-colour']"></v-color-picker>
+              </v-button> -->
+
+                    <v-col :cols="3" v-if="i =='color'" >
+                        <v-menu
+                          :close-on-content-click="false"
+                          :nudge-width="200"
+                          offset-x
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-btn v-on="on">Colour</v-btn>
+                          </template>
+
+                          <v-card>
+                            <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['color']"></v-color-picker>
+                            
+                          </v-card>
+                        </v-menu>
+                    </v-col> 
+                    <v-col :cols="3" v-else-if="i == 'background-color'" >
+                        <v-menu
+                          :close-on-content-click="false"
+                          :nudge-width="200"
+                          offset-x
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-btn v-on="on">Background-colour</v-btn>
+                          </template>
+
+                          <v-card>
+                            
+                            <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['background-color']" ></v-color-picker>
+                          </v-card>
+                        </v-menu>
+                    </v-col>
+
+              <v-text-field v-else
                 :label="i"
                 :type="(['angle', 'x', 'y', 'width', 'height'].includes(i)) ? 'number' : 'text'"
                 v-model="slides[currentSlide]['styles'][last_item()][i]"
               ></v-text-field>
-            </v-list-item-content>
+              
+            </v-list-item-content> <!--ADD A CHECK FOR COLOUR, THEN ADD COLOUR PICKER ELEMENT <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker> -->
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -177,12 +264,6 @@
         :value="overlay"
         z-index="100"
     >
-    <v-card id="renderbox" ref="renderbox"
-      class="d-inline-block mx-auto"
-      height="600px"
-      width="1067px"
-      :style="getCardStyle(slides[currentSlide])"
-    >
       <div v-for="i in slides[slide_overlay].visible" :key="i"  style="opacity: 0.25">
         <drr
           :x="slides[slide_overlay].styles[i].x"
@@ -210,15 +291,9 @@
         </drr>
       </div>
     </v-card>
-    <v-row align="center" justify="center">
-      <v-btn
-        color="success"
-        class="mt-2"
-        @click="overlay = !overlay"
-      >
-        Done!
-      </v-btn>
-    </v-row>
+      <v-row align="center" justify="center">
+        <v-btn color="success" class="mt-2" @click="overlay = !overlay">Done!</v-btn>
+      </v-row>
     </v-overlay>
   </v-app>
 </template>
@@ -244,6 +319,8 @@ export default {
     slide_overlay: 0,
     object_overlay: null
   }),
+  name: "",
+
 
   methods: {
     addSlide(slide_index) {
@@ -281,27 +358,44 @@ export default {
     copyElement(into_s) {
       if (this.slides[into_s] !== undefined && this.selected_items.length > 0) {
         this.slides[into_s].visible.push(this.last_item());
-        this.slides[into_s].styles[this.last_item()] = JSON.parse(JSON.stringify(this.slides[this.currentSlide].styles[this.last_item()]));
+        this.slides[into_s].styles[this.last_item()] = JSON.parse(
+          JSON.stringify(
+            this.slides[this.currentSlide].styles[this.last_item()]
+          )
+        );
         this.currentSlide = into_s;
       }
     },
 
     editStyleOverlay(into_s) {
-      console.log(this.slides)
-      console.log("into_s", into_s)
+      console.log(this.slides);
+      console.log("into_s", into_s);
       if (this.slides[into_s] !== undefined && this.selected_items.length > 0) {
-        console.log("We're in", this.overlay)
-        this.slide_overlay = into_s
-        this.object_overlay = this.last_item()
-        this.slides[into_s].styles[this.last_item()] = JSON.parse(JSON.stringify(this.slides[this.currentSlide].styles[this.last_item()]));
-        this.overlay = !this.overlay
-        console.log("We're out", this.overlay)
+        console.log("We're in", this.overlay);
+        this.slide_overlay = into_s;
+        this.object_overlay = this.last_item();
+        this.slides[into_s].styles[this.last_item()] = JSON.parse(
+          JSON.stringify(
+            this.slides[this.currentSlide].styles[this.last_item()]
+          )
+        );
+        this.overlay = !this.overlay;
+        console.log("We're out", this.overlay);
       }
-      console.log(this.slides)
+      console.log(this.slides);
     },
 
     addImage(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000", "border-radius":0, "#arbitrary-style": ""};
+      const style = {
+        height: 100,
+        width: 100,
+        x: 100,
+        y: 100,
+        angle: 0,
+        "background-color": "#00000000",
+        "border-radius": 0,
+        "#arbitrary-style": ""
+      };
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "img",
@@ -423,10 +517,13 @@ export default {
           console.log("box height: ", box_height);
           console.log("box width: ", box_width);
 
-          const fontSize = this.slides[i].styles[j]["font-size"];
-          if (fontSize.endsWith("vh")) {
-            const n = parseInt(fontSize.substring(0, fontSize.length - 2));
-            transfer.slides[i].styles[j]["font-size"] = (n * window.innerHeight / box_height) + "vh";
+          var fontSize = 0;
+          if (this.slides[i].styles[j]["font-size"]) {
+            if (fontSize.endsWith("vh")) {
+              const n = parseInt(fontSize.substring(0, fontSize.length - 2));
+              transfer.slides[i].styles[j]["font-size"] =
+                (n * window.innerHeight) / box_height + "vh";
+            }
           }
         }
       }
@@ -442,23 +539,60 @@ export default {
     },
 
     make_style(styles) {
-      var styles_str = JSON.stringify(styles)
-      styles_str = styles_str.slice(1,-1).split('"').join("").split(',').join(';').split("#arbitrary-style:").join("")
-      return styles_str
+      var styles_str = JSON.stringify(styles);
+      styles_str = styles_str
+        .slice(1, -1)
+        .split('"')
+        .join("")
+        .split(",")
+        .join(";")
+        .split("#arbitrary-style:")
+        .join("");
+      return styles_str;
       // return "background-color: #FF0000FF"
     },
 
     present() {
-      //console.log(this);
+        //console.log(this);
+        var transfer = {
+            //"slides": this.slides,
+            //"objects": this.objects,
+            "slides" :JSON.parse(JSON.stringify(this.slides)),
+            "objects" :JSON.parse(JSON.stringify(this.objects)),
+
+        }
+        this.scaleStyleDataBeforeTransfer(transfer)
+        localStorage.setItem("data", JSON.stringify(transfer));
+        window.open("/viewer.html", "Slideshow", "width=960, height=540");
+      },
+    generateOut(){
       var transfer = {
-        //"slides": this.slides,
-        //"objects": this.objects,
-        slides: JSON.parse(JSON.stringify(this.slides)),
-        objects: JSON.parse(JSON.stringify(this.objects))
-      };
-      this.scaleStyleDataBeforeTransfer(transfer);
-      localStorage.setItem("data", JSON.stringify(transfer));
-      window.open("/viewer.html", "Slideshow", "width=960, height=540");
+            "slides": this.slides,
+            "objects": this.objects,
+            //"slides" :JSON.parse(JSON.stringify(this.slides)),
+            //"objects" :JSON.parse(JSON.stringify(this.objects)),
+
+        }
+        var fileName = prompt("What is presentation id in local storage?")
+        localStorage.setItem(fileName, JSON.stringify(transfer));
+        console.log(name)
+        //window.open("/out.html", "outshow", "width=960, height=540");
+
+    },
+    loadIn(){
+      var fileName = prompt("What is presentation id in local storage?")
+      console.log("name", fileName)
+      var loaded = localStorage.getItem(fileName)
+      console.log("s2 is :",loaded)
+      console.log(this.slides)
+      console.log(this.objects)
+      console.log("parse, stringify", JSON.parse(JSON.stringify(loaded)))
+      this.slides = JSON.parse(loaded)["slides"]
+      this.objects = JSON.parse(loaded)["objects"]
+      console.log(this.slides)
+      console.log(this.objects)
+
+      //window.open("/out.html", "outshow", "width=960, height=540");
     }
   }
 };
