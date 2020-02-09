@@ -206,7 +206,7 @@ export default {
     },
 
     addImage(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000", "border-radius":0};
+      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000", "border-radius":0, "#arbitrary-style": ""};
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "img",
@@ -217,7 +217,7 @@ export default {
     },
 
     addDiv(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "font-size": "20px", "color": "#000000FF", "background-color": "#00000000", "border-radius":0};
+      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "font-size": "20px", "color": "#000000FF", "background-color": "#00000000", "border-radius":0, "#arbitrary-style": ""};
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "div",
@@ -228,7 +228,7 @@ export default {
 
     itemChange(i) {
       return rect => {
-        console.log(rect, i);
+        // console.log(rect, i);
         let style = this.slides[this.currentSlide].styles[i];
         style.width = rect.w;
         style.height = rect.h;
@@ -299,8 +299,7 @@ export default {
 
     make_style(styles) {
       var styles_str = JSON.stringify(styles)
-      styles_str = styles_str.slice(1,-1).split('"').join("").split(',').join(';')
-      console.log(styles_str)
+      styles_str = styles_str.slice(1,-1).split('"').join("").split(',').join(';').split("#arbitrary-style:").join("")
       return styles_str
       // return "background-color: #FF0000FF"
     },
