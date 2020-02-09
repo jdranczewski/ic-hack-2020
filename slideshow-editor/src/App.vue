@@ -86,11 +86,11 @@
         <v-icon>mdi-content-paste</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn @click="generateOut" dark right>
-        <v-icon left>mdi-floppy</v-icon>
+      <v-btn @click="generateOut" dark icon>
+        <v-icon>mdi-floppy</v-icon>
       </v-btn>
-      <v-btn icon @click="loadIn" dark right>
-        <v-icon left>mdi-download</v-icon>
+      <v-btn icon @click="loadIn" dark>
+        <v-icon>mdi-download</v-icon>
       </v-btn>
       <v-btn @click="present" light right>
         <v-icon left>mdi-presentation-play</v-icon>Present
