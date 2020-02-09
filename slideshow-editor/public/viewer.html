@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Slide viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div id="slide-0" class="slideshow">
+        <!-- slideshow goes here! -->
+
+    </div>
+    <style>
+        head, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            overflow: hidden;
+        }
+        .slideshow {
+            width: 100%;
+            height: 100%;
+
+        }
+        .object {
+            display: block;
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+    <script src="view.js"></script>
+  </body>
+</html>
