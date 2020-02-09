@@ -8,7 +8,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item-group color="primary" v-model="currentSlide" mandatory>
+        <v-list-item-group color="pink" v-model="currentSlide" mandatory>
           <v-list-item v-for="(s, i) in slides" :key="i">
             <v-list-item-content>
               <v-card
@@ -17,36 +17,33 @@
                 height="120px"
                 :style="getCardStyle(s)"
                 :dark="luminance(s['background_colour']) < 80"
-                >
-                  <v-card-title>{{i+1}}
-                  </v-card-title>
-                  <v-card-subtitle>
-                    <v-container>
+              >
+                <v-card-title>{{i+1}}</v-card-title>
+                <v-card-subtitle>
+                  <v-container>
                     <v-row>
-                    <v-col></v-col>
-                    <v-col class="pa-0" :cols="3.5">
-                    <v-text-field
-                      suffix="s"
-                      v-model="slides[i]['transition_time']"
-                      label="Time"
-                      type="number"
-                    ></v-text-field>
-                    </v-col>
-                    <v-col :cols="3">
-                        <v-menu
-                          :close-on-content-click="false"
-                          :nudge-width="200"
-                          offset-x
-                        >
+                      <v-col></v-col>
+                      <v-col class="pa-0" :cols="3.5">
+                        <v-text-field
+                          suffix="s"
+                          v-model="slides[i]['transition_time']"
+                          label="Time"
+                          type="number"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col :cols="3">
+                        <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
                           <template v-slot:activator="{ on }">
-                            <v-btn v-on="on" icon><v-icon>mdi-format-color-fill</v-icon></v-btn>
+                            <v-btn v-on="on" icon>
+                              <v-icon>mdi-format-color-fill</v-icon>
+                            </v-btn>
                           </template>
 
                           <v-card>
                             <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker>
                           </v-card>
                         </v-menu>
-                    </v-col>
+                      </v-col>
                     </v-row>
                   </v-container>
                 </v-card-subtitle>
@@ -84,14 +81,15 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn @click="present" light right>
-        <v-icon left>mdi-presentation-play</v-icon>
-        Present
+        <v-icon left>mdi-presentation-play</v-icon>Present
       </v-btn>
     </v-app-bar>
 
     <v-content>
-      <v-container  class="fill-height" fluid>
-        <v-card id="renderbox" ref="renderbox"
+      <v-container class="fill-height" fluid>
+        <v-card
+          id="renderbox"
+          ref="renderbox"
           class="d-inline-block mx-auto"
           height="600px"
           width="1067px"
@@ -106,8 +104,17 @@
               :angle="slides[currentSlide].styles[i].angle"
               v-on="{change: itemChange(i), select: itemSelect(i), deselect: itemDeselect(i)}"
             >
-              <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" :style="make_style(slides[currentSlide].styles[i])"/>
-              <div v-if="objects[i].type == 'div'" class="slideObject" :style="make_style(slides[currentSlide].styles[i])">{{objects[i].content}}</div>
+              <img
+                v-if="objects[i].type == 'img'"
+                :src="objects[i].src"
+                class="slideObject"
+                :style="make_style(slides[currentSlide].styles[i])"
+              />
+              <div
+                v-if="objects[i].type == 'div'"
+                class="slideObject"
+                :style="make_style(slides[currentSlide].styles[i])"
+              >{{objects[i].content}}</div>
             </drr>
           </div>
         </v-card>
@@ -121,21 +128,15 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item-group color="primary" v-if="selected_items.length > 0" mandatory>
+        <v-list-item-group color="pink" v-if="selected_items.length > 0" mandatory>
           <v-list-item v-if="objects[last_item()]['type']=='img'">
             <v-list-item-content>
-              <v-text-field
-                label="src"
-                v-model="objects[last_item()]['src']"
-              ></v-text-field>
+              <v-text-field label="src" v-model="objects[last_item()]['src']"></v-text-field>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-else>
             <v-list-item-content>
-              <v-text-field
-                label="text"
-                v-model="objects[last_item()]['content']"
-              ></v-text-field>
+              <v-text-field label="text" v-model="objects[last_item()]['content']"></v-text-field>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-for="(s, i) in slides[currentSlide]['styles'][last_item()]" :key="i">
@@ -206,18 +207,36 @@ export default {
     },
 
     addImage(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000", "border-radius":0};
+      const style = {
+        height: 100,
+        width: 100,
+        x: 100,
+        y: 100,
+        angle: 0,
+        "background-color": "#00000000",
+        "border-radius": 0
+      };
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "img",
         src:
-          "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+          "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?format=jpg&quality=90&v=1530129081"
       });
       this.slides[slide_index].visible.push(this.objects.length - 1);
     },
 
     addDiv(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "font-size": "20px", "color": "#000000FF", "background-color": "#00000000", "border-radius":0};
+      const style = {
+        height: 100,
+        width: 100,
+        x: 100,
+        y: 100,
+        angle: 0,
+        "font-size": "20px",
+        color: "#000000FF",
+        "background-color": "#00000000",
+        "border-radius": 0
+      };
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "div",
@@ -241,8 +260,8 @@ export default {
     itemSelect(i) {
       return rect => {
         console.log(rect);
-        this.selected_items.push(i)
-        console.log(this.selected_items)
+        this.selected_items.push(i);
+        console.log(this.selected_items);
       };
     },
 
@@ -250,42 +269,60 @@ export default {
       return rect => {
         console.log(rect, i);
         // this.selected_items.pop(i)
-        console.log(this.selected_items)
+        console.log(this.selected_items);
       };
     },
 
     last_item() {
-      return this.selected_items[this.selected_items.length-1]
+      return this.selected_items[this.selected_items.length - 1];
     },
 
     getCardStyle(s) {
       return { "background-color": s.background_colour };
     },
 
-    scaleStyleDataBeforeTransfer(transfer){
-        for (var i in this.slides){
-          console.log(i)
-          //console.log(this.slides[i]["styles"]["height"])
-          for(var j in this.slides[i].styles){
-            //var box_height = this.$refs.renderbox.clientHeight -24;
-            //var box_width = this.$refs.renderbox.clientWidth -24 ;
-            var box_height =600
-            var box_width = 1067
-            var angle = this.slides[i].styles[j].angle * Math.PI/180
-            console.log(angle)
-            transfer.slides[i].styles[j]["width"]= 100*(this.slides[i].styles[j].width)/(box_width) + "%"
-            transfer.slides[i].styles[j]["height"] = 100*(this.slides[i].styles[j].height)/(box_height) + "%"
-            transfer.slides[i].styles[j]["left"] = 100*(this.slides[i].styles[j].x - this.slides[i].styles[j].width/2)/box_width + "%"
-            transfer.slides[i].styles[j]["top"] = 100*(this.slides[i].styles[j].y - this.slides[i].styles[j].height/2 )/box_height + "%"
-            transfer.slides[i].styles[j]["transform"] = "rotate("+this.slides[i].styles[j].angle+"deg)"
-            console.log("left is (in percent): ", transfer.slides[i].styles[j]["left"] )
-            console.log("angle is (in percent): ", "rotate("+this.slides[i].styles[j].angle+"deg)" )
-            //console.log("top is (in percent): ", top)
-            console.log("box height: ", box_height )
-            console.log("box width: ", box_width )
-
-          }
+    scaleStyleDataBeforeTransfer(transfer) {
+      for (var i in this.slides) {
+        console.log(i);
+        //console.log(this.slides[i]["styles"]["height"])
+        for (var j in this.slides[i].styles) {
+          //var box_height = this.$refs.renderbox.clientHeight -24;
+          //var box_width = this.$refs.renderbox.clientWidth -24 ;
+          var box_height = 600;
+          var box_width = 1067;
+          var angle = (this.slides[i].styles[j].angle * Math.PI) / 180;
+          console.log(angle);
+          transfer.slides[i].styles[j]["width"] =
+            (100 * this.slides[i].styles[j].width) / box_width + "%";
+          transfer.slides[i].styles[j]["height"] =
+            (100 * this.slides[i].styles[j].height) / box_height + "%";
+          transfer.slides[i].styles[j]["left"] =
+            (100 *
+              (this.slides[i].styles[j].x -
+                this.slides[i].styles[j].width / 2)) /
+              box_width +
+            "%";
+          transfer.slides[i].styles[j]["top"] =
+            (100 *
+              (this.slides[i].styles[j].y -
+                this.slides[i].styles[j].height / 2)) /
+              box_height +
+            "%";
+          transfer.slides[i].styles[j]["transform"] =
+            "rotate(" + this.slides[i].styles[j].angle + "deg)";
+          console.log(
+            "left is (in percent): ",
+            transfer.slides[i].styles[j]["left"]
+          );
+          console.log(
+            "angle is (in percent): ",
+            "rotate(" + this.slides[i].styles[j].angle + "deg)"
+          );
+          //console.log("top is (in percent): ", top)
+          console.log("box height: ", box_height);
+          console.log("box width: ", box_width);
         }
+      }
     },
 
     luminance(hex) {
@@ -293,30 +330,34 @@ export default {
       var r = (bigint >> 16) & 255;
       var g = (bigint >> 8) & 255;
       var b = bigint & 255;
-      console.log(0.299*r + 0.587*g + 0.114*b);
-      return (0.299*r + 0.587*g + 0.114*b);
+      console.log(0.299 * r + 0.587 * g + 0.114 * b);
+      return 0.299 * r + 0.587 * g + 0.114 * b;
     },
 
     make_style(styles) {
-      var styles_str = JSON.stringify(styles)
-      styles_str = styles_str.slice(1,-1).split('"').join("").split(',').join(';')
-      console.log(styles_str)
-      return styles_str
+      var styles_str = JSON.stringify(styles);
+      styles_str = styles_str
+        .slice(1, -1)
+        .split('"')
+        .join("")
+        .split(",")
+        .join(";");
+      console.log(styles_str);
+      return styles_str;
       // return "background-color: #FF0000FF"
     },
 
     present() {
-        //console.log(this);
-        var transfer = {
-            //"slides": this.slides,
-            //"objects": this.objects,
-            "slides" :JSON.parse(JSON.stringify(this.slides)),
-            "objects" :JSON.parse(JSON.stringify(this.objects)),
-
-        }
-        this.scaleStyleDataBeforeTransfer(transfer)
-        localStorage.setItem("data", JSON.stringify(transfer));
-        window.open("/viewer.html", "Slideshow", "width=960, height=540");
+      //console.log(this);
+      var transfer = {
+        //"slides": this.slides,
+        //"objects": this.objects,
+        slides: JSON.parse(JSON.stringify(this.slides)),
+        objects: JSON.parse(JSON.stringify(this.objects))
+      };
+      this.scaleStyleDataBeforeTransfer(transfer);
+      localStorage.setItem("data", JSON.stringify(transfer));
+      window.open("/viewer.html", "Slideshow", "width=960, height=540");
     }
   }
 };
