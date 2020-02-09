@@ -157,10 +157,10 @@
               <v-icon style="transform: scaleX(-1)" left>mdi-content-duplicate</v-icon>
             </v-btn>
             <v-btn-toggle rounded>
-              <v-btn @click="addSlide(currentSlide)">
+              <v-btn @click="editStyleOverlay(currentSlide-1)">
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
-              <v-btn @click="copySlide(currentSlide)">
+              <v-btn @click="editStyleOverlay(currentSlide+1)">
                 <v-icon>mdi-content-copy</v-icon>
               </v-btn>
             </v-btn-toggle>
@@ -171,6 +171,54 @@
         </v-row>
       </template>
     </v-navigation-drawer>
+
+    <v-overlay
+        :value="overlay"
+        z-index="100"
+    >
+    <v-card id="renderbox" ref="renderbox"
+      class="d-inline-block mx-auto"
+      height="600px"
+      width="1067px"
+      :style="getCardStyle(slides[currentSlide])"
+    >
+      <div v-for="i in slides[slide_overlay].visible" :key="i">
+        <drr
+          :x="slides[slide_overlay].styles[i].x"
+          :y="slides[slide_overlay].styles[i].y"
+          :w="slides[slide_overlay].styles[i].width"
+          :h="slides[slide_overlay].styles[i].height"
+          :angle="slides[slide_overlay].styles[i].angle"
+          :selectable="false"
+        >
+          <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" :style="make_style(slides[slide_overlay].styles[i])"/>
+          <div v-if="objects[i].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[i])">{{objects[i].content}}</div>
+        </drr>
+      </div>
+      <div v-if="object_overlay !== null">
+        <drr
+          :x="slides[slide_overlay].styles[object_overlay].x"
+          :y="slides[slide_overlay].styles[object_overlay].y"
+          :w="slides[slide_overlay].styles[object_overlay].width"
+          :h="slides[slide_overlay].styles[object_overlay].height"
+          :angle="slides[slide_overlay].styles[object_overlay].angle"
+          v-on="{change: itemChangeOverlay()}"
+        >
+          <img v-if="objects[object_overlay].type == 'img'" :src="objects[object_overlay].src" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])"/>
+          <div v-if="objects[object_overlay].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])">{{objects[object_overlay].content}}</div>
+        </drr>
+      </div>
+    </v-card>
+    <v-row align="center" justify="center">
+      <v-btn
+        color="success"
+        class="mt-2"
+        @click="overlay = !overlay"
+      >
+        Done!
+      </v-btn>
+    </v-row>
+    </v-overlay>
   </v-app>
 </template>
 
@@ -190,7 +238,10 @@ export default {
         styles: {}
       }
     ],
-    objects: []
+    objects: [],
+    overlay: false,
+    slide_overlay: 0,
+    object_overlay: null
   }),
 
   methods: {
@@ -234,6 +285,20 @@ export default {
       }
     },
 
+    editStyleOverlay(into_s) {
+      console.log(this.slides)
+      console.log("into_s", into_s)
+      if (this.slides[into_s] !== undefined && this.selected_items.length > 0) {
+        console.log("We're in", this.overlay)
+        this.slide_overlay = into_s
+        this.object_overlay = this.last_item()
+        this.slides[into_s].styles[this.last_item()] = JSON.parse(JSON.stringify(this.slides[this.currentSlide].styles[this.last_item()]));
+        this.overlay = !this.overlay
+        console.log("We're out", this.overlay)
+      }
+      console.log(this.slides)
+    },
+
     addImage(slide_index) {
       const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000", "border-radius":0, "#arbitrary-style": ""};
       this.slides[slide_index].styles[this.objects.length] = style;
@@ -259,6 +324,18 @@ export default {
       return rect => {
         // console.log(rect, i);
         let style = this.slides[this.currentSlide].styles[i];
+        style.width = rect.w;
+        style.height = rect.h;
+        style.x = rect.x;
+        style.y = rect.y;
+        style.angle = rect.angle;
+      };
+    },
+
+    itemChangeOverlay() {
+      return rect => {
+        // console.log(rect, i);
+        let style = this.slides[this.slide_overlay].styles[this.object_overlay];
         style.width = rect.w;
         style.height = rect.h;
         style.x = rect.x;
