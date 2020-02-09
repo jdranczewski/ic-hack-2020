@@ -204,6 +204,26 @@ export default {
       return { "background-color": s.background_colour };
     },
 
+    scaleStyleDataBeforeTransfer(transfer){
+        for (var i in this.slides){
+          console.log(i)
+          //console.log(this.slides[i]["styles"]["height"])
+          for(var j in this.slides[i].styles){
+            var box_width = this.$refs.renderbox.clientWidth;
+            var box_height = this.$refs.renderbox.clientHeight;
+            transfer.slides[i].styles[j]["width"]= 100*(this.slides[i].styles[j].width)/box_width + "%"
+            transfer.slides[i].styles[j]["height"] = 100*(this.slides[i].styles[j].height)/box_height + "%"
+            transfer.slides[i].styles[j]["left"] = 100*(this.slides[i].styles[j].x - this.slides[i].styles[j].width/2)/box_width + "%"
+            transfer.slides[i].styles[j]["top"] = 100*(this.slides[i].styles[j].y - this.slides[i].styles[j].height/2 )/box_height + "%"
+            //console.log("left is (in percent): ", left)
+            //console.log("top is (in percent): ", top)
+            //console.log("box height: ", box_height )
+            //console.log("box width: ", box_width )
+            
+          }
+        }
+
+    },
     luminance(hex) {
       var bigint = parseInt(hex.substring(1), 16);
       var r = (bigint >> 16) & 255;
