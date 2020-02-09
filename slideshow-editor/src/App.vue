@@ -95,12 +95,12 @@
       <v-btn @click="present" light right>
         <v-icon left>mdi-presentation-play</v-icon>Present
       </v-btn>
-      
+
       <!--<template>
         <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
         <v-btn color="primary" dark v-on="on"><v-icon left>mdi-download</v-icon>
-        
+
        Save file
       </v-btn>
       </template>
@@ -120,7 +120,7 @@
         <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
         <v-btn color="primary" dark v-on="on"><v-icon left>mdi-floppy</v-icon>
-        
+
        Load file
       </v-btn>
       </template>
@@ -136,7 +136,7 @@
       </v-card>
       </v-dialog>
       </template> -->
-      
+
     </v-app-bar>
 
     <v-content>
@@ -212,10 +212,10 @@
 
                           <v-card>
                             <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['color']"></v-color-picker>
-                            
+
                           </v-card>
                         </v-menu>
-                    </v-col> 
+                    </v-col>
                     <v-col :cols="3" v-else-if="i == 'background-color'" >
                         <v-menu
                           :close-on-content-click="false"
@@ -227,7 +227,7 @@
                           </template>
 
                           <v-card>
-                            
+
                             <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['background-color']" ></v-color-picker>
                           </v-card>
                         </v-menu>
@@ -238,7 +238,7 @@
                 :type="(['angle', 'x', 'y', 'width', 'height'].includes(i)) ? 'number' : 'text'"
                 v-model="slides[currentSlide]['styles'][last_item()][i]"
               ></v-text-field>
-              
+
             </v-list-item-content> <!--ADD A CHECK FOR COLOUR, THEN ADD COLOUR PICKER ELEMENT <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker> -->
           </v-list-item>
         </v-list-item-group>
@@ -270,6 +270,12 @@
         :value="overlay"
         z-index="100"
     >
+    <v-card id="renderbox" ref="renderbox"
+      class="d-inline-block mx-auto"
+      height="600px"
+      width="1067px"
+      :style="getCardStyle(slides[currentSlide])"
+    >
       <div v-for="i in slides[slide_overlay].visible" :key="i"  style="opacity: 0.25">
         <drr
           :x="slides[slide_overlay].styles[i].x"
@@ -296,9 +302,16 @@
           <div v-if="objects[object_overlay].type == 'div'" class="slideObject" :style="make_style(slides[slide_overlay].styles[object_overlay])">{{objects[object_overlay].content}}</div>
         </drr>
       </div>
-      <v-row align="center" justify="center">
-        <v-btn color="success" class="mt-2" @click="overlay = !overlay">Done!</v-btn>
-      </v-row>
+    </v-card>
+    <v-row align="center" justify="center">
+      <v-btn
+        color="success"
+        class="mt-2"
+        @click="overlay = !overlay"
+      >
+        Done!
+      </v-btn>
+    </v-row>
     </v-overlay>
   </v-app>
 </template>
