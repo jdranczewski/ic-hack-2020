@@ -80,9 +80,57 @@
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
+      <v-btn @click="generateOut" dark right>
+        <v-icon left>mdi-floppy</v-icon>
+      </v-btn>
+      <v-btn icon @click="loadIn" dark right>
+        <v-icon left>mdi-download</v-icon>
+      </v-btn>
       <v-btn @click="present" light right>
         <v-icon left>mdi-presentation-play</v-icon>Present
       </v-btn>
+      
+      <!--<template>
+        <v-dialog v-model="dialog" persistent max-width="600px">
+      <template v-slot:activator="{ on }">
+        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-download</v-icon>
+        
+       Save file
+      </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Save file</span>
+        </v-card-title>
+        <v-text-field v-model="name" label="Slideshow name" required></v-text-field>
+      <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click='generateOut("name"), dialog = false'>Output</v-btn>
+        </v-card-actions>
+      </v-card>
+      </v-dialog>
+      </template>
+      <template>
+        <v-dialog v-model="dialog" persistent max-width="600px">
+      <template v-slot:activator="{ on }">
+        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-floppy</v-icon>
+        
+       Load file
+      </v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Output file</span>
+        </v-card-title>
+        <v-text-field v-model="name" label="Slideshow name" required></v-text-field>
+      <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click='loadIn("name"), dialog = false'>Output</v-btn>
+        </v-card-actions>
+      </v-card>
+      </v-dialog>
+      </template> -->
+      
     </v-app-bar>
 
     <v-content>
@@ -141,12 +189,51 @@
           </v-list-item>
           <v-list-item v-for="(s, i) in slides[currentSlide]['styles'][last_item()]" :key="i">
             <v-list-item-content>
-              <v-text-field
+              <!-- <v-button v-if="i == 'background-color'">
+                Colour
+                <v-color-picker v-model="slides[currentSlide]['styles']['background-colour']"></v-color-picker>
+              </v-button> -->
+
+                    <v-col :cols="3" v-if="i =='color'" >
+                        <v-menu
+                          :close-on-content-click="false"
+                          :nudge-width="200"
+                          offset-x
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-btn v-on="on">Colour</v-btn>
+                          </template>
+
+                          <v-card>
+                            <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['color']"></v-color-picker>
+                            
+                          </v-card>
+                        </v-menu>
+                    </v-col> 
+                    <v-col :cols="3" v-else-if="i == 'background-color'" >
+                        <v-menu
+                          :close-on-content-click="false"
+                          :nudge-width="200"
+                          offset-x
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-btn v-on="on">Background-colour</v-btn>
+                          </template>
+
+                          <v-card>
+                            
+                            <v-color-picker v-model="slides[currentSlide]['styles'][last_item()]['background-color']" ></v-color-picker>
+                          </v-card>
+                        </v-menu>
+                    </v-col>
+
+              <v-text-field v-else
                 :label="i"
                 :type="(['angle', 'x', 'y', 'width', 'height'].includes(i)) ? 'number' : 'text'"
                 v-model="slides[currentSlide]['styles'][last_item()][i]"
               ></v-text-field>
-            </v-list-item-content>
+              
+            </v-list-item-content> <!--ADD A CHECK FOR COLOUR, THEN ADD COLOUR PICKER ELEMENT <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker> -->
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -255,6 +342,8 @@ export default {
     slide_overlay: 0,
     object_overlay: null
   }),
+  name: "",
+
 
   methods: {
     addSlide(slide_index) {
@@ -486,16 +575,46 @@ export default {
     },
 
     present() {
-      //console.log(this);
+        //console.log(this);
+        var transfer = {
+            //"slides": this.slides,
+            //"objects": this.objects,
+            "slides" :JSON.parse(JSON.stringify(this.slides)),
+            "objects" :JSON.parse(JSON.stringify(this.objects)),
+
+        }
+        this.scaleStyleDataBeforeTransfer(transfer)
+        localStorage.setItem("data", JSON.stringify(transfer));
+        window.open("/viewer.html", "Slideshow", "width=960, height=540");
+      },
+    generateOut(){
       var transfer = {
-        //"slides": this.slides,
-        //"objects": this.objects,
-        slides: JSON.parse(JSON.stringify(this.slides)),
-        objects: JSON.parse(JSON.stringify(this.objects))
-      };
-      this.scaleStyleDataBeforeTransfer(transfer);
-      localStorage.setItem("data", JSON.stringify(transfer));
-      window.open("/viewer.html", "Slideshow", "width=960, height=540");
+            "slides": this.slides,
+            "objects": this.objects,
+            //"slides" :JSON.parse(JSON.stringify(this.slides)),
+            //"objects" :JSON.parse(JSON.stringify(this.objects)),
+
+        }
+        var fileName = prompt("What is presentation id in local storage?")
+        localStorage.setItem(fileName, JSON.stringify(transfer));
+        console.log(name)
+        //window.open("/out.html", "outshow", "width=960, height=540");
+
+    },
+    loadIn(){
+      var fileName = prompt("What is presentation id in local storage?")
+      console.log("name", fileName)
+      var loaded = localStorage.getItem(fileName)
+      console.log("s2 is :",loaded)
+      console.log(this.slides)
+      console.log(this.objects)
+      console.log("parse, stringify", JSON.parse(JSON.stringify(loaded)))
+      this.slides = JSON.parse(loaded)["slides"]
+      this.objects = JSON.parse(loaded)["objects"]
+      console.log(this.slides)
+      console.log(this.objects)
+
+      //window.open("/out.html", "outshow", "width=960, height=540");
     }
   }
 };
