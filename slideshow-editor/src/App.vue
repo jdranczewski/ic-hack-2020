@@ -16,12 +16,13 @@
                 class="d-inline-block mx-auto"
                 height="120px"
                 :style="getCardStyle(s)"
+                :dark="luminance(s['background_colour']) < 80"
                 >
                   <v-card-title>{{i+1}}
                   </v-card-title>
                   <v-card-subtitle>
                     <v-container>
-                    <v-row :align="start" :justify="end">
+                    <v-row>
                     <v-col></v-col>
                     <v-col class="pa-0" :cols="3.5">
                     <v-text-field
@@ -32,7 +33,19 @@
                     ></v-text-field>
                     </v-col>
                     <v-col :cols="3">
-                    <v-btn icon><v-icon>mdi-format-color-fill</v-icon></v-btn>
+                        <v-menu
+                          :close-on-content-click="false"
+                          :nudge-width="200"
+                          offset-x
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-btn v-on="on" icon><v-icon>mdi-format-color-fill</v-icon></v-btn>
+                          </template>
+
+                          <v-card>
+                            <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker>
+                          </v-card>
+                        </v-menu>
                     </v-col>
                     </v-row>
                   </v-container>
@@ -112,7 +125,7 @@ export default {
     currentSlide: 0,
     slides: [
       {
-        background_colour: "white",
+        background_colour: "#FFFFFF",
         visible: [],
         transition_time: 0,
         styles: {}
@@ -124,7 +137,7 @@ export default {
   methods: {
     addSlide(slide_index) {
       const slide = {
-        background_colour: "white",
+        background_colour: "#FFFFFF",
         visible: [],
         transition_time: 0,
         styles: {}
@@ -189,6 +202,15 @@ export default {
 
     getCardStyle(s) {
       return { "background-color": s.background_colour };
+    },
+
+    luminance(hex) {
+      var bigint = parseInt(hex.substring(1), 16);
+      var r = (bigint >> 16) & 255;
+      var g = (bigint >> 8) & 255;
+      var b = bigint & 255;
+      console.log(0.299*r + 0.587*g + 0.114*b);
+      return (0.299*r + 0.587*g + 0.114*b);
     },
 
     present() {
