@@ -59,11 +59,9 @@
             <v-btn-toggle rounded>
               <v-btn @click="addSlide(currentSlide)" color="pink" dark>
                 <v-icon>mdi-plus</v-icon>
-              </v-btn>
-              <v-btn @click="removeSlide(currentSlide)">
+              </v-btn> <v-btn @click="removeSlide(currentSlide)">
                 <v-icon>mdi-minus</v-icon>
-              </v-btn>
-              <v-btn @click="copySlide(currentSlide)">
+              </v-btn><v-btn @click="copySlide(currentSlide)">
                 <v-icon>mdi-content-copy</v-icon>
               </v-btn>
             </v-btn-toggle>
@@ -73,63 +71,68 @@
     </v-navigation-drawer>
 
     <v-app-bar app color="darken-3" dark>
-      <v-btn icon @click="addImage(currentSlide)">
+      <!--<v-btn icon @click="addImage(currentSlide)">
         <v-icon>mdi-image</v-icon>
+      </v-btn> -->
+      <template>
+      <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+      <v-btn icon @click="addImage(currentSlide)" dark right v-on="on">
+        <v-icon left>mdi-image</v-icon>
+      
       </v-btn>
-      <v-btn icon @click="addDiv(currentSlide)">
+      </template>
+      <span>Add Image</span>
+      </v-tooltip>
+      </template>
+      
+      <!--<v-btn icon @click="addDiv(currentSlide)">
         <v-icon>mdi-code-tags</v-icon>
       </v-btn>
+      <v-spacer></v-spacer> -->
+    <template>
+      <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+      <v-btn icon @click="addDiv(currentSlide)" dark right v-on="on">
+        <v-icon left>mdi-code-tags</v-icon>
+      
+      </v-btn>
+      </template>
+      <span>Add Div element</span>
+      </v-tooltip>
+      </template>
       <v-spacer></v-spacer>
+      <!--
       <v-btn @click="generateOut" dark right>
         <v-icon left>mdi-floppy</v-icon>
       </v-btn>
-      <v-btn icon @click="loadIn" dark right>
-        <v-icon left>mdi-download</v-icon>
+      -->
+    <template>
+      <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+      <v-btn icon @click="generateOut" dark right v-on="on">
+        <v-icon left>mdi-floppy</v-icon>
+      
       </v-btn>
+      </template>
+      <span>Save presentation</span>
+      </v-tooltip>
+      </template>
+
+    <template>
+      <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+      <v-btn icon @click="loadIn" dark right v-on="on">
+        <v-icon left>mdi-download</v-icon>
+      
+      </v-btn>
+      </template>
+      <span>Load presentation</span>
+      </v-tooltip>
+      </template>
       <v-btn @click="present" light right>
         <v-icon left>mdi-presentation-play</v-icon>Present
       </v-btn>
-      
-      <!--<template>
-        <v-dialog v-model="dialog" persistent max-width="600px">
-      <template v-slot:activator="{ on }">
-        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-download</v-icon>
-        
-       Save file
-      </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Save file</span>
-        </v-card-title>
-        <v-text-field v-model="name" label="Slideshow name" required></v-text-field>
-      <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click='generateOut("name"), dialog = false'>Output</v-btn>
-        </v-card-actions>
-      </v-card>
-      </v-dialog>
-      </template>
-      <template>
-        <v-dialog v-model="dialog" persistent max-width="600px">
-      <template v-slot:activator="{ on }">
-        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-floppy</v-icon>
-        
-       Load file
-      </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Output file</span>
-        </v-card-title>
-        <v-text-field v-model="name" label="Slideshow name" required></v-text-field>
-      <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click='loadIn("name"), dialog = false'>Output</v-btn>
-        </v-card-actions>
-      </v-card>
-      </v-dialog>
-      </template> -->
       
     </v-app-bar>
 
