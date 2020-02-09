@@ -4,7 +4,7 @@
       <v-list>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="title" center>CSSlideS</v-list-item-title>
+            <v-list-item-title class="title" center>CSSlides</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -159,10 +159,10 @@
             </v-btn>
             <v-btn-toggle rounded>
               <v-btn @click="editStyleOverlay(currentSlide-1)">
-                <v-icon>mdi-plus</v-icon>
+                <v-icon>mdi-chevron-double-left</v-icon>
               </v-btn>
               <v-btn @click="editStyleOverlay(currentSlide+1)">
-                <v-icon>mdi-content-copy</v-icon>
+                <v-icon>mdi-chevron-double-right</v-icon>
               </v-btn>
             </v-btn-toggle>
             <v-btn @click="copyElement(currentSlide+1)" icon>
@@ -183,7 +183,7 @@
       width="1067px"
       :style="getCardStyle(slides[currentSlide])"
     >
-      <div v-for="i in slides[slide_overlay].visible" :key="i">
+      <div v-for="i in slides[slide_overlay].visible" :key="i"  style="opacity: 0.25">
         <drr
           :x="slides[slide_overlay].styles[i].x"
           :y="slides[slide_overlay].styles[i].y"
