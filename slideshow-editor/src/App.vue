@@ -312,7 +312,19 @@ export default {
     },
 
     addDiv(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "font-size": "2vh", "color": "#000000FF", "background-color": "#00000000", "border-radius":0, "#arbitrary-style": ""};
+      const style = {
+        height: 100,
+        width: 100,
+        x: 100,
+        y: 100,
+        angle: 0,
+        "font-family": "Arial, Helvetica, sans-serif",
+        "font-size": "20px",
+        color: "#000000FF",
+        "background-color": "#00000000",
+        "border-radius": 0,
+        "#arbitrary-style": ""
+      };
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "div",
@@ -409,6 +421,12 @@ export default {
           //console.log("top is (in percent): ", top)
           console.log("box height: ", box_height);
           console.log("box width: ", box_width);
+
+          const fontSize = this.slides[i].styles[j]["font-size"];
+          if (fontSize.endsWith("vh")) {
+            const n = parseInt(fontSize.substring(0, fontSize.length - 2));
+            transfer.slides[i].styles[j]["font-size"] = (n * window.innerHeight / box_height) + "vh";
+          }
         }
       }
     },
