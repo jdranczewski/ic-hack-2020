@@ -16,12 +16,13 @@
                 class="d-inline-block mx-auto"
                 height="120px"
                 :style="getCardStyle(s)"
+                :dark="luminance(s['background_colour']) < 80"
                 >
                   <v-card-title>{{i+1}}
                   </v-card-title>
                   <v-card-subtitle>
                     <v-container>
-                    <v-row :align="start" :justify="end">
+                    <v-row>
                     <v-col></v-col>
                     <v-col class="pa-0" :cols="3.5">
                     <v-text-field
@@ -32,7 +33,19 @@
                     ></v-text-field>
                     </v-col>
                     <v-col :cols="3">
-                    <v-btn icon><v-icon>mdi-format-color-fill</v-icon></v-btn>
+                        <v-menu
+                          :close-on-content-click="false"
+                          :nudge-width="200"
+                          offset-x
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-btn v-on="on" icon><v-icon>mdi-format-color-fill</v-icon></v-btn>
+                          </template>
+
+                          <v-card>
+                            <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker>
+                          </v-card>
+                        </v-menu>
                     </v-col>
                     </v-row>
                   </v-container>
@@ -77,7 +90,7 @@
     </v-app-bar>
 
     <v-content>
-      <v-container id = "renderbox" ref = "renderbox" class="fill-height" fluid>
+      <v-container id="renderbox" ref="renderbox" class="fill-height" fluid>
         <v-card
           class="d-inline-block mx-auto"
           height="600px"
@@ -100,9 +113,6 @@
           </div>
         </v-card>
       </v-container>
-      <!-- <v-btn bottom color="pink" dark fab fixed right @click="addSlide()">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>-->
     </v-content>
   </v-app>
 </template>
@@ -115,7 +125,7 @@ export default {
     currentSlide: 0,
     slides: [
       {
-        background_colour: "white",
+        background_colour: "#FFFFFF",
         visible: [],
         transition_time: 0,
         styles: {}
@@ -127,7 +137,7 @@ export default {
   methods: {
     addSlide(slide_index) {
       const slide = {
-        background_colour: "white",
+        background_colour: "#FFFFFF",
         visible: [],
         transition_time: 0,
         styles: {}
@@ -193,6 +203,7 @@ export default {
     getCardStyle(s) {
       return { "background-color": s.background_colour };
     },
+
     scaleStyleDataBeforeTransfer(transfer){
         for (var i in this.slides){
           console.log(i)
@@ -204,32 +215,39 @@ export default {
             transfer.slides[i].styles[j]["height"] = 100*(this.slides[i].styles[j].height)/box_height + "%"
             transfer.slides[i].styles[j]["left"] = 100*(this.slides[i].styles[j].x - this.slides[i].styles[j].width/2)/box_width + "%"
             transfer.slides[i].styles[j]["top"] = 100*(this.slides[i].styles[j].y - this.slides[i].styles[j].height/2 )/box_height + "%"
-            transfer.slides[i].styles[j]["transform"] = "rotate("+this.slides[i].styles[j].angle+"deg)" 
+            transfer.slides[i].styles[j]["transform"] = "rotate("+this.slides[i].styles[j].angle+"deg)"
             console.log("left is (in percent): ", transfer.slides[i].styles[j]["left"] )
             console.log("angle is (in percent): ", "rotate("+this.slides[i].styles[j].angle+"deg)" )
             //console.log("top is (in percent): ", top)
             //console.log("box height: ", box_height )
             //console.log("box width: ", box_width )
-            
+
           }
         }
-
     },
+
+    luminance(hex) {
+      var bigint = parseInt(hex.substring(1), 16);
+      var r = (bigint >> 16) & 255;
+      var g = (bigint >> 8) & 255;
+      var b = bigint & 255;
+      console.log(0.299*r + 0.587*g + 0.114*b);
+      return (0.299*r + 0.587*g + 0.114*b);
+    },
+
     present() {
-        
         //console.log(this);
         var transfer = {
             //"slides": this.slides,
             //"objects": this.objects,
             "slides" :JSON.parse(JSON.stringify(this.slides)),
             "objects" :JSON.parse(JSON.stringify(this.objects)),
-            
+
         }
         this.scaleStyleDataBeforeTransfer(transfer)
         localStorage.setItem("data", JSON.stringify(transfer));
         window.open("/viewer.html", "Slideshow", "width=auto, height=auto");
-    },
-    
+    }
   }
 };
 </script>
