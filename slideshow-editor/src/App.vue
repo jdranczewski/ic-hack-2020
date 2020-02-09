@@ -469,7 +469,9 @@ export default {
             transfer.slides[i].styles[j]["height"] = 100*(this.slides[i].styles[j].height)/box_height + "%"
             transfer.slides[i].styles[j]["left"] = 100*(this.slides[i].styles[j].x - this.slides[i].styles[j].width/2)/box_width + "%"
             transfer.slides[i].styles[j]["top"] = 100*(this.slides[i].styles[j].y - this.slides[i].styles[j].height/2 )/box_height + "%"
-            //console.log("left is (in percent): ", left)
+            transfer.slides[i].styles[j]["transform"] = "rotate("+this.slides[i].styles[j].angle+"deg)" 
+            console.log("left is (in percent): ", transfer.slides[i].styles[j]["left"] )
+            console.log("angle is (in percent): ", "rotate("+this.slides[i].styles[j].angle+"deg)" )
             //console.log("top is (in percent): ", top)
             //console.log("box height: ", box_height )
             //console.log("box width: ", box_width )
