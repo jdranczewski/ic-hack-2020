@@ -149,6 +149,27 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
+
+      <template v-slot:append>
+        <v-row align="center" justify="center">
+          <div class="pa-2">
+            <v-btn @click="copyElement(currentSlide-1)" icon>
+              <v-icon style="transform: scaleX(-1)" left>mdi-content-duplicate</v-icon>
+            </v-btn>
+            <v-btn-toggle rounded>
+              <v-btn @click="addSlide(currentSlide)">
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+              <v-btn @click="copySlide(currentSlide)">
+                <v-icon>mdi-content-copy</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+            <v-btn @click="copyElement(currentSlide+1)" icon>
+              <v-icon right>mdi-content-duplicate</v-icon>
+            </v-btn>
+          </div>
+        </v-row>
+      </template>
     </v-navigation-drawer>
   </v-app>
 </template>
@@ -203,6 +224,14 @@ export default {
         JSON.parse(JSON.stringify(this.slides[slide_index]))
       );
       this.currentSlide = slide_index + 1;
+    },
+
+    copyElement(into_s) {
+      if (this.slides[into_s] !== undefined && this.selected_items.length > 0) {
+        this.slides[into_s].visible.push(this.last_item());
+        this.slides[into_s].styles[this.last_item()] = JSON.parse(JSON.stringify(this.slides[this.currentSlide].styles[this.last_item()]));
+        this.currentSlide = into_s;
+      }
     },
 
     addImage(slide_index) {
@@ -269,7 +298,7 @@ export default {
           for(var j in this.slides[i].styles){
             //var box_height = this.$refs.renderbox.clientHeight -24;
             //var box_width = this.$refs.renderbox.clientWidth -24 ;
-            var box_height =600
+            var box_height = 600
             var box_width = 1067
             var angle = this.slides[i].styles[j].angle * Math.PI/180
             console.log(angle)
