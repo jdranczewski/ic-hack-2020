@@ -4,7 +4,7 @@
       <v-list>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="title" center>Slides App</v-list-item-title>
+            <v-list-item-title class="title" center>CSSlideS</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
@@ -105,15 +105,35 @@
               :h="slides[currentSlide].styles[i].height"
               :angle="slides[currentSlide].styles[i].angle"
               :hasActiveContent="true"
-              v-on="{change: itemChange(i)}"
+              v-on="{change: itemChange(i), select: itemSelect(i)}"
             >
               <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" />
-              <div v-if="objects[i].type == 'div'" class="slideObject">{{objects[i].content}}</div>
+              <div v-if="objects[i].type == 'div'" class="slideObject" :style="slides[currentSlide].styles[i]">{{objects[i].content}}</div>
             </drr>
           </div>
         </v-card>
       </v-container>
     </v-content>
+    <v-navigation-drawer permanent right app>
+      <v-list>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="title" center>Properties</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item-group color="primary" v-if="selected_item !== null" mandatory>
+          <v-list-item v-for="(s, i) in slides[currentSlide]['styles'][selected_item]" :key="i">
+            <v-list-item-content>
+              <v-text-field
+                :label="i"
+                v-model="slides[currentSlide]['styles'][selected_item][i]"
+              ></v-text-field>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
   </v-app>
 </template>
 
@@ -123,6 +143,7 @@ export default {
     dialog: false,
     drawer: null,
     currentSlide: 0,
+    selected_item: null,
     slides: [
       {
         background_colour: "#FFFFFF",
@@ -168,7 +189,7 @@ export default {
     },
 
     addImage(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0 };
+      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000"};
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "img",
@@ -179,7 +200,7 @@ export default {
     },
 
     addDiv(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0 };
+      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "font-size": "20px", "color": "#000000FF", "background-color": "#00000000", "border-radius":0};
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "div",
@@ -200,6 +221,13 @@ export default {
       };
     },
 
+    itemSelect(i) {
+      return rect => {
+        console.log(rect);
+        this.selected_item = i
+      };
+    },
+
     getCardStyle(s) {
       return { "background-color": s.background_colour };
     },
@@ -210,7 +238,7 @@ export default {
           //console.log(this.slides[i]["styles"]["height"])
           for(var j in this.slides[i].styles){
             //var box_height = this.$refs.renderbox.clientHeight -24;
-            //var box_width = this.$refs.renderbox.clientWidth -24 ; 
+            //var box_width = this.$refs.renderbox.clientWidth -24 ;
             var box_height =600
             var box_width = 1067
             var angle = this.slides[i].styles[j].angle * Math.PI/180
