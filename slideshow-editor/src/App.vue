@@ -104,11 +104,10 @@
               :w="slides[currentSlide].styles[i].width"
               :h="slides[currentSlide].styles[i].height"
               :angle="slides[currentSlide].styles[i].angle"
-              :hasActiveContent="true"
-              v-on="{change: itemChange(i), select: itemSelect(i)}"
+              v-on="{change: itemChange(i), select: itemSelect(i), deselect: itemDeselect(i)}"
             >
-              <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" />
-              <div v-if="objects[i].type == 'div'" class="slideObject" :style="slides[currentSlide].styles[i]">{{objects[i].content}}</div>
+              <img v-if="objects[i].type == 'img'" :src="objects[i].src" class="slideObject" :style="make_style(slides[currentSlide].styles[i])"/>
+              <div v-if="objects[i].type == 'div'" class="slideObject" :style="make_style(slides[currentSlide].styles[i])">{{objects[i].content}}</div>
             </drr>
           </div>
         </v-card>
@@ -122,12 +121,29 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item-group color="primary" v-if="selected_item !== null" mandatory>
-          <v-list-item v-for="(s, i) in slides[currentSlide]['styles'][selected_item]" :key="i">
+        <v-list-item-group color="primary" v-if="selected_items.length > 0" mandatory>
+          <v-list-item v-if="objects[last_item()]['type']=='img'">
+            <v-list-item-content>
+              <v-text-field
+                label="src"
+                v-model="objects[last_item()]['src']"
+              ></v-text-field>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-else>
+            <v-list-item-content>
+              <v-text-field
+                label="text"
+                v-model="objects[last_item()]['content']"
+              ></v-text-field>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-for="(s, i) in slides[currentSlide]['styles'][last_item()]" :key="i">
             <v-list-item-content>
               <v-text-field
                 :label="i"
-                v-model="slides[currentSlide]['styles'][selected_item][i]"
+                :type="(['angle', 'x', 'y', 'width', 'height'].includes(i)) ? 'number' : 'text'"
+                v-model="slides[currentSlide]['styles'][last_item()][i]"
               ></v-text-field>
             </v-list-item-content>
           </v-list-item>
@@ -144,11 +160,12 @@ export default {
     drawer: null,
     currentSlide: 0,
     selected_item: null,
+    selected_items: [],
     slides: [
       {
         background_colour: "#FFFFFF",
         visible: [],
-        transition_time: 0,
+        transition_time: 1,
         styles: {}
       }
     ],
@@ -160,7 +177,7 @@ export default {
       const slide = {
         background_colour: "#FFFFFF",
         visible: [],
-        transition_time: 0,
+        transition_time: 1,
         styles: {}
       };
 
@@ -189,7 +206,7 @@ export default {
     },
 
     addImage(slide_index) {
-      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000"};
+      const style = { height: 100, width: 100, x: 100, y: 100, angle: 0, "background-color": "#00000000", "border-radius":0};
       this.slides[slide_index].styles[this.objects.length] = style;
       this.objects.push({
         type: "img",
@@ -224,8 +241,21 @@ export default {
     itemSelect(i) {
       return rect => {
         console.log(rect);
-        this.selected_item = i
+        this.selected_items.push(i)
+        console.log(this.selected_items)
       };
+    },
+
+    itemDeselect(i) {
+      return rect => {
+        console.log(rect, i);
+        // this.selected_items.pop(i)
+        console.log(this.selected_items)
+      };
+    },
+
+    last_item() {
+      return this.selected_items[this.selected_items.length-1]
     },
 
     getCardStyle(s) {
@@ -267,6 +297,14 @@ export default {
       return (0.299*r + 0.587*g + 0.114*b);
     },
 
+    make_style(styles) {
+      var styles_str = JSON.stringify(styles)
+      styles_str = styles_str.slice(1,-1).split('"').join("").split(',').join(';')
+      console.log(styles_str)
+      return styles_str
+      // return "background-color: #FF0000FF"
+    },
+
     present() {
         //console.log(this);
         var transfer = {
@@ -278,7 +316,7 @@ export default {
         }
         this.scaleStyleDataBeforeTransfer(transfer)
         localStorage.setItem("data", JSON.stringify(transfer));
-        window.open("/viewer.html", "Slideshow", "width=auto, height=auto");
+        window.open("/viewer.html", "Slideshow", "width=960, height=540");
     }
   }
 };
