@@ -85,7 +85,12 @@
       <v-btn icon v-if="clipboard !== null" @click="pasteFromClipboard">
         <v-icon>mdi-content-paste</v-icon>
       </v-btn>
+      <v-btn icon v-if="selected_items.length > 0" @click="itemDelete">
+        <v-icon>mdi-delete</v-icon>
+      </v-btn>
+
       <v-spacer></v-spacer>
+
       <v-btn @click="generateOut" dark icon>
         <v-icon>mdi-floppy</v-icon>
       </v-btn>
@@ -174,11 +179,18 @@
         </v-card>
       </v-container>
     </v-content>
+    
     <v-navigation-drawer permanent right app>
       <v-list>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="title" center>Properties</v-list-item-title>
+            <!--<v-list-item-title class="title" center>Properties</v-list-item-title>-->
+            <v-container>
+              <v-row>
+                <v-btn v-on="on">Properties</v-btn>
+                <v-btn v-on="on">Code</v-btn>
+              </v-row>
+            </v-container>
           </v-list-item-content>
         </v-list-item>
 
@@ -195,11 +207,6 @@
           </v-list-item>
           <v-list-item v-for="(s, i) in slides[currentSlide]['styles'][last_item()]" :key="i">
             <v-list-item-content>
-              <!-- <v-button v-if="i == 'background-color'">
-                Colour
-                <v-color-picker v-model="slides[currentSlide]['styles']['background-colour']"></v-color-picker>
-              </v-button> -->
-
                     <v-col :cols="3" v-if="i =='color'" >
                         <v-menu
                           :close-on-content-click="false"
@@ -243,6 +250,8 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
+      </v-navigation-drawer>
+    
 
       <template v-slot:append>
         <v-row align="center" justify="center">
@@ -264,8 +273,7 @@
           </div>
         </v-row>
       </template>
-    </v-navigation-drawer>
-
+    
     <v-overlay
         :value="overlay"
         z-index="100"
@@ -449,7 +457,6 @@ export default {
 
     itemChange(i) {
       return rect => {
-        // console.log(rect, i);
         let style = this.slides[this.currentSlide].styles[i];
         style.width = rect.w;
         style.height = rect.h;
@@ -461,7 +468,6 @@ export default {
 
     itemChangeOverlay() {
       return rect => {
-        // console.log(rect, i);
         let style = this.slides[this.slide_overlay].styles[this.object_overlay];
         style.width = rect.w;
         style.height = rect.h;
@@ -475,7 +481,8 @@ export default {
       return rect => {
         console.log(rect);
         this.selected_items.push(i);
-        console.log(this.selected_items);
+        this.selected_item = i;
+        //console.log(this.selected_items);
       };
     },
 
@@ -483,8 +490,14 @@ export default {
       return rect => {
         console.log(rect, i);
         // this.selected_items.pop(i)
-        console.log(this.selected_items);
+        //console.log(this.selected_items);
       };
+    },
+
+    itemDelete(i) { //sets item to not visible on slide so is "deleted", should preserve
+      console.log("selected item: ",this.selected_item, "whatever i is: ", i)
+      console.log("style of selected object: ", this.slides[this.currentSlide].styles[this.selected_item])
+      this.slides[this.currentSlide].visible.pop(this.selected_item)
     },
 
     copySelectedObject() {
@@ -509,15 +522,11 @@ export default {
 
     scaleStyleDataBeforeTransfer(transfer) {
       for (var i in this.slides) {
-        console.log(i);
-        //console.log(this.slides[i]["styles"]["height"])
         for (var j in this.slides[i].styles) {
-          //var box_height = this.$refs.renderbox.clientHeight -24;
-          //var box_width = this.$refs.renderbox.clientWidth -24 ;
           var box_height = 600;
           var box_width = 1067;
-          var angle = (this.slides[i].styles[j].angle * Math.PI) / 180;
-          console.log(angle);
+          //var angle = (this.slides[i].styles[j].angle * Math.PI) / 180;
+
           transfer.slides[i].styles[j]["width"] =
             (100 * this.slides[i].styles[j].width) / box_width + "%";
           transfer.slides[i].styles[j]["height"] =
@@ -544,9 +553,6 @@ export default {
             "angle is (in percent): ",
             "rotate(" + this.slides[i].styles[j].angle + "deg)"
           );
-          //console.log("top is (in percent): ", top)
-          console.log("box height: ", box_height);
-          console.log("box width: ", box_width);
 
           if (this.slides[i].styles[j]["font-size"] != undefined) {
             var fontSize = this.slides[i].styles[j]["font-size"];
@@ -584,10 +590,7 @@ export default {
     },
 
     present() {
-        //console.log(this);
         var transfer = {
-            //"slides": this.slides,
-            //"objects": this.objects,
             "slides" :JSON.parse(JSON.stringify(this.slides)),
             "objects" :JSON.parse(JSON.stringify(this.objects)),
 
@@ -600,30 +603,20 @@ export default {
       var transfer = {
             "slides": this.slides,
             "objects": this.objects,
-            //"slides" :JSON.parse(JSON.stringify(this.slides)),
-            //"objects" :JSON.parse(JSON.stringify(this.objects)),
 
         }
         var fileName = prompt("What is presentation id in local storage?")
         localStorage.setItem(fileName, JSON.stringify(transfer));
         console.log(name)
-        //window.open("/out.html", "outshow", "width=960, height=540");
 
     },
     loadIn(){
       var fileName = prompt("What is presentation id in local storage?")
-      console.log("name", fileName)
       var loaded = localStorage.getItem(fileName)
-      console.log("s2 is :",loaded)
-      console.log(this.slides)
-      console.log(this.objects)
-      console.log("parse, stringify", JSON.parse(JSON.stringify(loaded)))
       this.slides = JSON.parse(loaded)["slides"]
       this.objects = JSON.parse(loaded)["objects"]
-      console.log(this.slides)
-      console.log(this.objects)
 
-      //window.open("/out.html", "outshow", "width=960, height=540");
+
     }
   }
 };
