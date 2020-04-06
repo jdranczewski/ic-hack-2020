@@ -180,19 +180,9 @@
       </v-container>
     </v-content>
     
-    <v-navigation-drawer permanent right app>
-      <v-list>
-        <v-list-item>
-          <v-list-item-content>
-            <!--<v-list-item-title class="title" center>Properties</v-list-item-title>-->
-            <v-container>
-              <v-row>
-                <v-btn v-on="on">Properties</v-btn>
-                <v-btn v-on="on">Code</v-btn>
-              </v-row>
-            </v-container>
-          </v-list-item-content>
-        </v-list-item>
+    <v-navigation-drawer right app>
+      <v-list v-if="seen" id ="hide">
+        
 
         <v-list-item-group color="pink" v-if="selected_items.length > 0" mandatory>
           <v-list-item v-if="objects[last_item()]['type']=='img'">
@@ -248,7 +238,20 @@
 
             </v-list-item-content> <!--ADD A CHECK FOR COLOUR, THEN ADD COLOUR PICKER ELEMENT <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker> -->
           </v-list-item>
+          <v-list-item>
+          <v-list-item-content>
+                <v-btn v-on:click="switchToCSSPane">Arbritrary style</v-btn>
+          </v-list-item-content>
+        </v-list-item>
         </v-list-item-group>
+      </v-list>
+      <v-list v-show="!seen" id ="hide">
+        <v-list-item >
+          <v-btn v-on:click="switchToPropPane">Properties</v-btn>
+        </v-list-item>
+        <v-list-item>
+          <textarea id="CSS" ref ="CSS" rows="20" auto-grow counter= 250>test</textarea>
+        </v-list-item>
       </v-list>
       </v-navigation-drawer>
     
@@ -333,6 +336,7 @@ export default {
     selected_item: null,
     selected_items: [],
     clipboard: null,
+    seen: true,
     slides: [
       {
         background_colour: "#FFFFFF",
@@ -347,7 +351,6 @@ export default {
     object_overlay: null
   }),
   name: "",
-
 
   methods: {
     addSlide(slide_index) {
@@ -489,7 +492,7 @@ export default {
     itemDeselect(i) {
       return rect => {
         console.log(rect, i);
-        // this.selected_items.pop(i)
+        //this.selected_items.pop(i)
         //console.log(this.selected_items);
       };
     },
@@ -519,6 +522,8 @@ export default {
     getCardStyle(s) {
       return { "background-color": s.background_colour };
     },
+
+    
 
     scaleStyleDataBeforeTransfer(transfer) {
       for (var i in this.slides) {
@@ -577,6 +582,7 @@ export default {
 
     make_style(styles) {
       var styles_str = JSON.stringify(styles);
+      console.log("input data",styles_str)
       styles_str = styles_str
         .slice(1, -1)
         .split('"')
@@ -585,10 +591,50 @@ export default {
         .join(";")
         .split("#arbitrary-style:")
         .join("");
+      //console.log(styles_str)
       return styles_str;
       // return "background-color: #FF0000FF"
     },
 
+    switchToCSSPane(){ //function that sets textarea text to CSS of selected object
+      this.seen = !this.seen
+      
+      var current_style = this.slides[this.currentSlide].styles[this.selected_item]
+      var current_style_string = this.make_style(current_style)
+      var edited_current_style_string = current_style_string.replace(/;/g, "; \n")
+
+      this.$refs.CSS.value = edited_current_style_string
+    },
+
+    switchToPropPane(){
+      var current_style_string = this.$refs.CSS.value
+      this.seen = !this.seen
+      //var edited_current_style_string = current_style_string
+      var edited_current_style_string = current_style_string.replace(/\r?\n|\r/g, ', "')
+      
+      var output_style_string = edited_current_style_string.replace(/; /g, '').
+        replace(/:/g, '":'); //ERROR HERE
+      output_style_string = '{"' + output_style_string
+      var colour_string = output_style_string.match(/"background-color":(.*).{1,9}/)[1].slice(0,9)
+      var regex1 = new RegExp(colour_string, "g")
+      output_style_string = output_style_string.replace(regex1, '"'+colour_string+'"')
+      console.log(output_style_string)
+      var arbitrary_string = output_style_string.match(/"border-radius":[^,],*(.*)/)
+      console.log(arbitrary_string)
+      arbitrary_string = arbitrary_string[1]
+      if (arbitrary_string != ' "'){
+        var regex2 = new RegExp(arbitrary_string, "g")
+        output_style_string = output_style_string.replace(regex2, '"#arbitrary-style":"'+arbitrary_string.replace(/"/g,"").replace(/, /g, ';')+'"}')
+      } 
+      else {
+        output_style_string = output_style_string.slice(0,-3)+', "#arbitrary-style":""}'
+      }
+      console.log(arbitrary_string)
+      //output_style_string = output_style_string
+      console.log("output data", output_style_string)
+      this.slides[this.currentSlide].styles[this.selected_item] = JSON.parse(output_style_string)
+
+    },
     present() {
         var transfer = {
             "slides" :JSON.parse(JSON.stringify(this.slides)),

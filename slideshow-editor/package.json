@@ -10,6 +10,7 @@
   "dependencies": {
     "@minogin/vue-drag-resize-rotate": "^1.0.5",
     "core-js": "^3.6.4",
+    "serve": "^11.3.0",
     "vue": "^2.6.11",
     "vuetify": "^2.1.0"
   },
