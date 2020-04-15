@@ -90,7 +90,9 @@
       </v-btn>
 
       <v-spacer></v-spacer>
-
+      <v-btn @click="login" dark icon>
+        <v-icon>mdi-account</v-icon>
+      </v-btn>
       <v-btn @click="generateOut" dark icon>
         <v-icon>mdi-floppy</v-icon>
       </v-btn>
@@ -102,33 +104,7 @@
       </v-btn>
 
       <!--<template>
-        <v-dialog v-model="dialog" persistent max-width="600px">
-      <template v-slot:activator="{ on }">
-        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-download</v-icon>
-
-       Save file
-      </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Save file</span>
-        </v-card-title>
-        <v-text-field v-model="name" label="Slideshow name" required></v-text-field>
-      <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click='generateOut("name"), dialog = false'>Output</v-btn>
-        </v-card-actions>
-      </v-card>
-      </v-dialog>
-      </template>
-      <template>
-        <v-dialog v-model="dialog" persistent max-width="600px">
-      <template v-slot:activator="{ on }">
-        <v-btn color="primary" dark v-on="on"><v-icon left>mdi-floppy</v-icon>
-
-       Load file
-      </v-btn>
-      </template>
+      
       <v-card>
         <v-card-title>
           <span class="headline">Output file</span>
@@ -181,10 +157,13 @@
     </v-content>
     
     <v-navigation-drawer right app>
+      
       <v-list v-if="seen" id ="hide">
+        <v-card><v-card-text class="headline mb-1" ><p class = "text-center">Properties</p></v-card-text></v-card>
         
-
         <v-list-item-group color="pink" v-if="selected_items.length > 0" mandatory>
+          
+          
           <v-list-item v-if="objects[last_item()]['type']=='img'">
             <v-list-item-content>
               <v-text-field label="src" v-model="objects[last_item()]['src']"></v-text-field>
@@ -238,19 +217,22 @@
 
             </v-list-item-content> <!--ADD A CHECK FOR COLOUR, THEN ADD COLOUR PICKER ELEMENT <v-color-picker v-model="slides[currentSlide]['background_colour']"></v-color-picker> -->
           </v-list-item>
-          <v-list-item>
+        <v-list-item>
           <v-list-item-content>
-                <v-btn v-on:click="switchToCSSPane">Arbritrary style</v-btn>
+                <v-btn  v-on:click="switchToCSSPane">CSS <v-icon>mdi-arrow-right</v-icon></v-btn>
           </v-list-item-content>
         </v-list-item>
         </v-list-item-group>
+        
       </v-list>
       <v-list v-show="!seen" id ="hide">
-        <v-list-item >
-          <v-btn v-on:click="switchToPropPane">Properties</v-btn>
-        </v-list-item>
+        <v-card><v-card-text class="headline mb-1" ><p class = "text-center">CSS</p></v-card-text></v-card>
+        
         <v-list-item>
           <textarea id="CSS" ref ="CSS" rows="20" auto-grow counter= 250>test</textarea>
+        </v-list-item>
+        <v-list-item>
+          <v-btn  v-on:click="switchToPropPane"><v-icon>mdi-arrow-left</v-icon>Properties</v-btn>
         </v-list-item>
       </v-list>
       </v-navigation-drawer>
@@ -350,7 +332,7 @@ export default {
     slide_overlay: 0,
     object_overlay: null
   }),
-  name: "",
+  name: "slide-editor",
 
   methods: {
     addSlide(slide_index) {
@@ -523,8 +505,6 @@ export default {
       return { "background-color": s.background_colour };
     },
 
-    
-
     scaleStyleDataBeforeTransfer(transfer) {
       for (var i in this.slides) {
         for (var j in this.slides[i].styles) {
@@ -633,18 +613,23 @@ export default {
       //output_style_string = output_style_string
       console.log("output data", output_style_string)
       this.slides[this.currentSlide].styles[this.selected_item] = JSON.parse(output_style_string)
-
     },
+
     present() {
         var transfer = {
             "slides" :JSON.parse(JSON.stringify(this.slides)),
             "objects" :JSON.parse(JSON.stringify(this.objects)),
-
         }
         this.scaleStyleDataBeforeTransfer(transfer)
         localStorage.setItem("data", JSON.stringify(transfer));
         window.open("/viewer.html", "Slideshow", "width=960, height=540");
       },
+
+
+    login(){
+      window.location = "/login.html"
+    },
+
     generateOut(){
       var transfer = {
             "slides": this.slides,
@@ -654,15 +639,12 @@ export default {
         var fileName = prompt("What is presentation id in local storage?")
         localStorage.setItem(fileName, JSON.stringify(transfer));
         console.log(name)
-
     },
     loadIn(){
       var fileName = prompt("What is presentation id in local storage?")
       var loaded = localStorage.getItem(fileName)
       this.slides = JSON.parse(loaded)["slides"]
       this.objects = JSON.parse(loaded)["objects"]
-
-
     }
   }
 };
