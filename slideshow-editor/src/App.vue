@@ -310,6 +310,37 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+import 'firebase/firestore'
+
+var firebaseConfig = {
+              apiKey: "AIzaSyDHpLX0RKyy0R7CJKUTvpnjaf4IsQlINvc",
+              authDomain: "cide-1d25d.firebaseapp.com",
+              databaseURL: "https://cide-1d25d.firebaseio.com",
+              projectId: "cide-1d25d",
+              storageBucket: "cide-1d25d.appspot.com",
+              messagingSenderId: "891806674475",
+              appId: "1:891806674475:web:eda7f07ffa4450b019846e"
+            };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+var uid = ""
+firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+              // User is signed in.
+              //var displayName = user.displayName;
+              //var email = user.email;
+              uid = user.uid;
+              // ...
+            } else {
+              // User is signed out.
+              // ...
+            }
+          })
+
+
+
 export default {
   data: () => ({
     dialog: false,
@@ -330,7 +361,7 @@ export default {
     objects: [],
     overlay: false,
     slide_overlay: 0,
-    object_overlay: null
+    object_overlay: null,
   }),
   name: "slide-editor",
 
@@ -598,10 +629,31 @@ export default {
       var colour_string = output_style_string.match(/"background-color":(.*).{1,9}/)[1].slice(0,9)
       var regex1 = new RegExp(colour_string, "g")
       output_style_string = output_style_string.replace(regex1, '"'+colour_string+'"')
-      console.log(output_style_string)
-      var arbitrary_string = output_style_string.match(/"border-radius":[^,],*(.*)/)
-      console.log(arbitrary_string)
-      arbitrary_string = arbitrary_string[1]
+      //console.log(output_style_string)
+      var arbitrary_string = output_style_string.match(/"border-radius":[^,]*(.*)/)
+      console.log("arbirtrayr string:", arbitrary_string)
+      try {
+        var text_align = (output_style_string.match(/"text-align":(.*)"color"/))[1].replace(/" /g, "").slice(0,-2)
+        console.log(text_align)
+        output_style_string = output_style_string.replace(/"text-align":(.*)"color"/, '"text-align": "'+text_align+'", "color"')
+        var font_size = (output_style_string.match(/"font-size":(.*)"text-align"/))[1].replace(/" /g, "").slice(0,-2)
+        console.log(font_size)
+        output_style_string = output_style_string.replace(/"font-size":(.*)"text-align"/, '"font-size": "'+font_size+'", "text-align"')
+        var colour = (output_style_string.match(/"color":(.*)"background-color"/))[1].replace(/" /g, "").slice(0,-2)
+        console.log(colour)
+        output_style_string = output_style_string.replace(/"color":(.*)"background-color"/, '"color": "'+colour+'", "background-color"')
+      } catch (error) {
+        console.log("Not a div 1")
+      }
+      try {
+        var font_string = (output_style_string.match(/"font-family":(.*)"font-size"/))[1].replace(/" /g, "").slice(0,-2)
+        console.log(font_string)
+        output_style_string = output_style_string.replace(/"font-family":(.*)"font-size"/, '"font-family": "'+font_string+'", "font-size"')
+      } catch (error) {
+        console.log("Not a div 2")
+      }
+      //var regex3 = new RegExp(font_string, "g")
+      arbitrary_string = arbitrary_string[0]
       if (arbitrary_string != ' "'){
         var regex2 = new RegExp(arbitrary_string, "g")
         output_style_string = output_style_string.replace(regex2, '"#arbitrary-style":"'+arbitrary_string.replace(/"/g,"").replace(/, /g, ';')+'"}')
@@ -634,20 +686,43 @@ export default {
       var transfer = {
             "slides": this.slides,
             "objects": this.objects,
-
         }
         var fileName = prompt("What is presentation id in local storage?")
         localStorage.setItem(fileName, JSON.stringify(transfer));
-        console.log(name)
+        //var user = firebase.auth().currentUser;
+        console.log("uid is:", uid)
+        this.writePres(this.uid, fileName, JSON.stringify(transfer) )
     },
     loadIn(){
       var fileName = prompt("What is presentation id in local storage?")
       var loaded = localStorage.getItem(fileName)
       this.slides = JSON.parse(loaded)["slides"]
       this.objects = JSON.parse(loaded)["objects"]
-    }
-  }
+    },
+    observer(){
+      
+    },
+  writePres(userID, pres_name, pres) {
+    firebase.database().ref('users/' + userID+"/presentations/").set({
+    pres_name: pres
+      });
+    console.log("written")
+  },
+
+  },
 };
+
+//Set up config
+
+
+//var database = firebase.database();
+//Set up an observer that gets user details when they sign on
+
+//console.log(uid)
+
+
+
+
 </script>
 
 <style scoped>

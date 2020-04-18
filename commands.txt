@@ -1,0 +1,11 @@
+cd C:\Users\User\Documents\GitHub\ic-hack-2020\slideshow-editor\src
+npm run build
+firebase init
+Y
+a
+
+dist
+N
+N
+N
+firebase deploy
