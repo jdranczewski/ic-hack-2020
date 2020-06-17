@@ -4,7 +4,7 @@
 # What is it?
 It's a slideshow editor focusing on giving you complete freedom in designing delightful transitions. Elements present on two slides will smoothly transform to their new position, rotation, scale, colour, and any other CSS parameter you may want! You can also design in and out transitions for appearing and disappearing elements.
 
-Try it out! https://csslides.netlify.app/
+**Try it out here: https://csslides.netlify.app/, or watch a short demo here: https://www.youtube.com/watch?v=HMSvtmqNJ3M!**
 
 ![A screenshot of the application working](https://i.imgur.com/7bnXZBS.png "A screenshot of the application working")
 
